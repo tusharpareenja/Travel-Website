@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import profile_picture from '../assets/Images/profile_picture.jpeg';
 import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
@@ -14,6 +14,8 @@ import Chitkul from '../assets/Images/chitkul.jpg'
 import manali from '../assets/Images/manali.jpg';
 import goa from '../assets/Images/goa.jpg'
 import { Link, useNavigate,  useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { useAxiosInstance } from '../lib/hooks';
 import image1 from '../assets/Images/image1.jpeg'
 import solan from '../assets/Images/solan.jpeg'
 import chandratal from '../assets/Images/chandratal.jpg'
@@ -27,6 +29,24 @@ function Home() {
     const [activeCategory, setActiveCategory] = useState('less-traffic');
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
+    const { axiosInstance, loading } = useAxiosInstance();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (loading) return
+            try {
+                console.log("Making request");
+                const response = await axiosInstance.post('/',{
+                    id : sessionStorage.getItem('id')
+                });
+                console.log(response.data);
+            } catch (error) {
+                console.error('API request failed:', error);
+            }
+        };
+
+        fetchData();
+    }, [axiosInstance, loading]);
 
     const renderDivs = () =>{
         switch(activeCategory){

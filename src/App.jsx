@@ -12,7 +12,6 @@ import Community from './components/Community'
 import Calendar1 from './components/Calendar'
 import { Calendar } from 'lucide-react'
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
