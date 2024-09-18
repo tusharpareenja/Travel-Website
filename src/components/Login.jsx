@@ -1,30 +1,62 @@
 import React, { useState } from 'react';
-import Image from '../assets/Images/Login.jpg'; // Import the image
+import Image from '../assets/Images/login.jpg'; // Import the image
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link, useNavigate } from 'react-router-dom';
+import { Google } from '@mui/icons-material';
+import { logout, signInWithGoogle } from '../lib/firebase';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { useAxiosInstance } from '../lib/hooks';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-
+    const {axios : axiosInstance} = useAxiosInstance()
     const handleLogin = async (e) => {
-        e.preventDefault();
         try {
-            await account.createEmailPasswordSession(email, password);
-            alert('Login Successful');
-            navigate('/home');
+            const res  = await axios.post("http://localhost:8080/auth/login", {
+                email,
+                password
+            })
+            console.log(res.data);
+            if (res.data.success){
+                sessionStorage.setItem('id', res.data.user.id);
+                toast.success('Login Successful');
+                navigate('/home');
+            }
         } catch (error) {
-            console.log('Login Failed:', error);
-            if (error.code === 401) {
-                alert('Invalid credentials. Please try again.');
+            if (error.response.data.error) {
+                toast.error(error.response.data.error);
             } else {
-                alert(`Login failed: ${error.message}`);
+                toast.error(`Login failed: ${error.message}`);
             }
         }
     };
+    const handleGoogleSignIn = async () => {
+        try {
+          const idToken = await signInWithGoogle();
+          console.log('ID token:', idToken);
+          
+          const response = await axios.post('http://localhost:8080/auth/signin-with-google', {
+            idToken
+          });
+    
+          const data = await response.data;
+          if (data) {
+            console.log(data);
+            sessionStorage.setItem('id', data.id);
+            console.log('User signed in successfully:', data);
+            navigate('/home');
+          } else {
+            console.error('Error signing in:', data.error);
+          }
+        } catch (error) {
+          console.error('Google sign-in failed:', error);
+        }
+      };
 
     return (
         <div  className='flex justify-center items-center'
@@ -62,12 +94,32 @@ const Login = () => {
                             {showPassword ? <VisibilityOff /> : <Visibility />}
                         </button>
                     </div>
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        Login
-                    </button>
+                    <section className='flex flex-col gap-2'>
+                        <button
+                            type='button'
+                            onClick={handleLogin}
+                            className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                            Login
+                        </button>
+                        <button
+                            type='button'
+                            onClick={handleGoogleSignIn}
+                            className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                            <Google/> Login with google
+                        </button>
+                        <button
+                            type='button'
+                            onClick={async()=>{
+                                await logout()
+                                sessionStorage.removeItem('id')
+                            }}
+                            className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                            Logout
+                        </button>
+                    </section>
                 </form>
                 <div className='mt-4'>
                         <Link to='/register' className='text-blue-500 hover:underline'>

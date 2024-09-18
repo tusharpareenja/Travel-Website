@@ -10,7 +10,6 @@ import Communities from './components/Communities'
 import Feed from './components/Feed'
 import Community from './components/Community'
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
