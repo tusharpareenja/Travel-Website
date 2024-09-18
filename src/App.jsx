@@ -9,6 +9,8 @@ import Home from './components/Home'
 import Communities from './components/Communities'
 import Feed from './components/Feed'
 import Community from './components/Community'
+import Calendar1 from './components/Calendar'
+import { Calendar } from 'lucide-react'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -23,6 +25,7 @@ function App() {
               <Route path="/communities" element={<Communities />} />
               <Route path="/feed" element={<Feed />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/calendar" element={<Calendar1 />} />
               <Route path="/" element={<Login />} />
           </Routes>
       </div>

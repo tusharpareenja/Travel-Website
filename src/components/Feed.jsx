@@ -54,6 +54,33 @@ function Feed() {
                     </ul>
                     </div>
                 </div>
+
+
+
+                <div className='absolute w-full h-full left-1/2 transform -translate-x-1/2 flex flex-col overflow-y-scroll md:left-80 md:transform-none md:top-10'>
+                
+                        <div className='h-28 flex'>
+                            <input 
+                                className='w-32 h-10 bg-customColor1 flex relative mr-2 ml-16 mt-4 mb-6 md:ml-0 text-white placeholder-gray-400 px-3 py-2 rounded-xl focus:outline-none text-sm md:w-96 md:h-14 md:px-4 md:py-2'
+                                placeholder='Search'
+                            />
+                            <button 
+                                className='w-14 h-10 bg-customColor2 relative mt-4 text-black font-bold rounded-xl hover:bg-yellow-600 transition duration-300 text-sm md:w-28 md:h-14 md:text-base'
+                            >
+                                Search
+                            </button>
+
+                            {/* Notification Button */}
+                            <button 
+                                className='w-10 h-10 mt-4 bg-customColor1 relative rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition duration-300 text-sm md:w-14 md:h-14 md:text-base'
+                                style={{ marginLeft: '40px' }}
+                            >
+                                <BellIcon className="w-6 h-6 md:w-8 md:h-8" />
+                            </button>
+                        </div>
+
+
+                </div>
             </div>    
         </>
     )

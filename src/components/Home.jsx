@@ -14,6 +14,13 @@ import Chitkul from '../assets/Images/chitkul.jpg'
 import manali from '../assets/Images/manali.jpg';
 import goa from '../assets/Images/goa.jpg'
 import { Link, useNavigate,  useLocation } from 'react-router-dom';
+import image1 from '../assets/Images/image1.jpeg'
+import solan from '../assets/Images/solan.jpeg'
+import chandratal from '../assets/Images/chandratal.jpg'
+import mount_abu from '../assets/Images/mount_abu.jpeg'
+import { Calendar } from "./ui/calendar.jsx";
+import HotelBookings from './ui/Bookings.jsx';  // Importing correctly
+
 
 function Home() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -160,7 +167,7 @@ function Home() {
                                 <HomeIcon className="w-6 h-6 mr-3" /> Home
                             </Link>
                         </li>
-                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/communities') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/communities', '/community') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/communities" className="flex items-center w-full h-full">
                                 <UsersIcon className="w-6 h-6 mr-3" /> Communities
                             </Link>
@@ -269,8 +276,62 @@ function Home() {
                                 <p className='text-gray-500 hover:cursor-pointer hover:text-white duration-300'>Budget Trip</p>
                             </div>
 
-                            {renderDivs()};
-                            
+                            {renderDivs()}
+                            <div className='w-5/6 h-120 flex mb-20 mt-44 md:mt-0 flex-col'>
+                                <div className='w-full flex ml-10 md:ml-0'>SOME COOL DESTINATIONS TO VISIT IN SEPTEMBER</div>
+                                <div className='w-96 md:w-full h-96   flex overflow-x-auto hide-scrollbar   flex-nowrap  mt-16 flex-shrink-0' style={{ scrollBehavior: 'smooth', overflowX: 'auto' }}>
+                                    <div className='w-80 h-96 bg-customColor1 rounded-3xl cursor-pointer ml-2 mt-2 flex-col flex-shrink-0'>
+                                        <div>
+                                        <img src={solan} className='h-64 w-full rounded-t-xl ' />
+                                        </div>
+                                        <div>
+                                        <p className='font-semibold text-lg mt-2 ml-2 text-white'>Solan</p>
+                                        </div>
+                                        <div className='flex'>
+                                        
+                                        <div className='mt-10 ml-2 text-white text-base bg-red-500 rounded-xl p-1'>High Traffic</div>
+                                        </div>
+                                    </div>
+                                    <div className='w-80 h-96 bg-customColor1 cursor-pointer rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
+                                        <div>
+                                        <img src={chandratal} className='h-64 w-full rounded-t-xl' />
+                                        </div>
+                                        <div>
+                                        <p className='font-semibold text-lg mt-2 ml-2 text-white'>CHANDRATAL</p>
+                                        </div>
+                                        <div className='flex'>
+                                        
+                                        <div className='mt-10 bg-green-400 ml-2 text-base p-1 rounded-xl text-white'>Less Traffic</div>
+                                        </div>
+                                    </div>
+                                    <div className='w-80 h-96 bg-customColor1 cursor-pointer rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
+                                        <div>
+                                        <img src={mount_abu} className='h-64 w-full rounded-t-xl' />
+                                        </div>
+                                        <div>
+                                        <p className='font-semibold text-lg mt-2 text-white'>Mount Abu</p>
+                                        </div>
+                                        <div className='flex'>
+                                        
+                                        <div className='mt-10 bg-green-400 ml-2 text-base p-1 rounded-xl text-white'>Less Traffic</div>
+                                        </div>
+                                    </div>
+                                    <div className='w-80 h-96 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
+                                        <div>
+                                        <img src={Valaparai} className='h-64 w-full rounded-t-xl' />
+                                        </div>
+                                        <div>
+                                        <p className='font-semibold text-lg mt-2 text-white'>Valaparai</p>
+                                        </div>
+                                        <div className='flex'>
+                                        
+                                        <div className='mt-10 bg-green-400 ml-2 text-base p-1 rounded-xl text-white'>Less Traffic</div>
+                                        </div>
+                                    </div>
+                                    
+                        
+                              </div>
+                            </div>
                         </div>
                     </div>
                   
@@ -278,7 +339,7 @@ function Home() {
 
                 {/* Right Panel */}
                 <div className='fixed hidden md:flex flex-col right-0 top-0 h-screen w-80 bg-customColor z-50 shadow-lg p-4 overflow-hidden '>
-                    <div className='flex items-center mb-20 mt-7 bg-customColor1 w-44 h-16 rounded-xl'>
+                    <div className='flex items-center mb-4 mt-7 bg-customColor1 w-44 h-16 rounded-xl'>
                         <div 
                             className='w-12 h-12 rounded-full ml-1' 
                             style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
@@ -289,20 +350,18 @@ function Home() {
                     </div>
 
                     {/* Calendar Section */}
-                    <div className='bg-customColor1 text-white mt-8 rounded-xl shadow-md p-4'>
+                    <div className='bg-customColor1 text-white mt-0 rounded-xl shadow-md p-4'>
                         <h2 className='text-lg font-semibold mb-2 flex items-center'>
                             <CalendarIcon className="w-6 h-6 mr-2 text-gray-600" /> Calendar
                         </h2>
                         {/* Simple Calendar */}
-                        <div className='grid grid-cols-7 gap-1 text-center'>
-                            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                                <div key={day} className='font-bold'>{day}</div>
-                            ))}
-                            {Array.from({ length: 30 }).map((_, index) => (
-                                <div key={index} className='p-2'>{index + 1}</div>
-                            ))}
-                        </div>
+                        <Calendar />
+                        
                     </div>
+                    <div>
+                        <HotelBookings />
+                    </div>
+                   
                 </div>
             </div>
         </>
