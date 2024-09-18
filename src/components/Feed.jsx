@@ -1,7 +1,7 @@
 import React from 'react'
 import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
-import { MapPinIcon } from '@heroicons/react/24/solid';
+import { MapPinIcon, UserGroupIcon, FolderIcon,UserIcon   } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 function Feed() {
@@ -33,12 +33,17 @@ function Feed() {
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/communities') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/communities" className="flex items-center w-full h-full">
-                                <UsersIcon className="w-6 h-6 mr-3" /> Communities
+                                <UserGroupIcon className="w-6 h-6 mr-3" /> Communities
                             </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/feed') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/feed" className="flex items-center w-full h-full">
-                                <UsersIcon className="w-6 h-6 mr-3" /> Feed
+                                <FolderIcon className="w-6 h-6 mr-3" /> Feed
+                            </Link>
+                        </li>
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/travelbuddy') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
+                            <Link to="/travelbuddy" className="flex items-center w-full h-full">
+                                <UsersIcon className="w-6 h-6 mr-3" /> Travel Buddy
                             </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/hotels') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>

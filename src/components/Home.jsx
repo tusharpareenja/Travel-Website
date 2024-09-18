@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import profile_picture from '../assets/Images/profile_picture.jpeg';
-import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon } from '@heroicons/react/24/solid';
+import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon,FolderIcon,UserGroupIcon  } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import ziro from '../assets/Images/ziro_valley.jpeg'
@@ -189,12 +189,17 @@ function Home() {
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/communities', '/community') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/communities" className="flex items-center w-full h-full">
-                                <UsersIcon className="w-6 h-6 mr-3" /> Communities
+                                <UserGroupIcon className="w-6 h-6 mr-3" /> Communities
                             </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/feed') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/feed" className="flex items-center w-full h-full">
-                                <HomeIcon className="w-6 h-6 mr-3" /> Feed
+                                <FolderIcon className="w-6 h-6 mr-3" /> Feed
+                            </Link>
+                        </li>
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/travelbuddy') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
+                            <Link to="/travelbuddy" className="flex items-center w-full h-full">
+                                <UsersIcon className="w-6 h-6 mr-3" /> Travel Buddy
                             </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/hotels') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>

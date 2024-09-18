@@ -11,6 +11,7 @@ import Feed from './components/Feed'
 import Community from './components/Community'
 import Calendar1 from './components/Calendar'
 import { Calendar } from 'lucide-react'
+import CreativeTravelPartnerFinder from './components/TravelBuddy'
 function App() {
 
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/feed" element={<Feed />} />
               <Route path="/community" element={<Community />} />
               <Route path="/calendar" element={<Calendar1 />} />
+              <Route path="/travelbuddy" element={<CreativeTravelPartnerFinder />} />
               <Route path="/" element={<Login />} />
           </Routes>
       </div>
