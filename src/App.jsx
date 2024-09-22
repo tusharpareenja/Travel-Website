@@ -12,6 +12,8 @@ import Community from './components/Community'
 import Calendar1 from './components/Calendar'
 import { Calendar } from 'lucide-react'
 import CreativeTravelPartnerFinder from './components/TravelBuddy'
+import GuideBooking from './components/TravelGuide'
+import GuidePage from './components/GuidePage'
 function App() {
 
   return (
@@ -28,6 +30,8 @@ function App() {
               <Route path="/calendar" element={<Calendar1 />} />
               <Route path="/travelbuddy" element={<CreativeTravelPartnerFinder />} />
               <Route path="/" element={<Login />} />
+              <Route path="/travelguide" element={<GuideBooking />} />
+              <Route path="/guide" element={<GuidePage />} />
           </Routes>
       </div>
       

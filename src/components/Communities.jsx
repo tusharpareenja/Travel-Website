@@ -1,5 +1,5 @@
 import React from 'react'
-import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon, FolderIcon,UserGroupIcon  } from '@heroicons/react/24/solid';
+import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon, FolderIcon,UserGroupIcon, MapIcon  } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
@@ -25,7 +25,7 @@ function Communities() {
                 {/* Sidebar */}
                 <div className={`fixed inset-y-0 left-0 w-60 h-screen bg-customColor shadow-2xl flex flex-col transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:w-60 z-40`}>
                     <div className="w-20 h-48 bg-gradient-to-l from-yellow-300/65 via-yellow-900/40 to-customColor rounded-l-full absolute right-0 top-12 opacity-60"></div>
-                    <div className='relative mt-20 md:mt-40'>
+                    <div className='relative mt-20 md:mt-32'>
                     <ul className="space-y-6">
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/home') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/home" className="flex items-center w-full h-full">
@@ -45,6 +45,11 @@ function Communities() {
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/travelbuddy') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                             <Link to="/travelbuddy" className="flex items-center w-full h-full">
                                 <UsersIcon className="w-6 h-6 mr-3" /> Travel Buddy
+                            </Link>
+                        </li>
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/guide') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
+                            <Link to="/guide" className="flex items-center w-full h-full">
+                                <MapIcon className="w-6 h-6 mr-3" /> Travel Guide
                             </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/hotels') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
@@ -83,7 +88,7 @@ function Communities() {
                         </div>
 
                         <div className='w-40 h-16'>
-                          <div className='w-40 h-12 flex rounded-3xl font-semibold hover:translate-x-2 hover:cursor-pointer duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 ' onClick={() => setModalOpen(true)}>Create Community</div> 
+                          <div className='w-40 h-12 flex rounded-3xl font-semibold hover:cursor-pointer hover:scale-105  duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 ' onClick={() => setModalOpen(true)}>Create Community</div> 
                         </div>
 
 
