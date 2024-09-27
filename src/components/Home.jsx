@@ -22,7 +22,10 @@ import chandratal from '../assets/Images/chandratal.jpg'
 import mount_abu from '../assets/Images/mount_abu.jpeg'
 import { Calendar } from "./ui/calendar.jsx";
 import HotelBookings from './ui/Bookings.jsx';
-import background from '../assets/images/water back.jpeg'  // Importing correctly
+import background from '../assets/Images/water back.jpeg'
+import { getUser } from '@/lib/firebase';
+import { toast } from 'sonner';
+import api from '../lib/api';
 
 
 function Home() {
@@ -31,14 +34,22 @@ function Home() {
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
     const { axiosInstance, loading } = useAxiosInstance();
+    const [data, setData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             if (loading) return
+            const user = getUser()
+            if(!user) {
+                toast.error("Please login to continue")
+                return
+            }
+            console.log(user)
             try {
                 console.log("Making request");
-                const response = await axiosInstance.post('/',{
-                    id : sessionStorage.getItem('id')
+                
+                const response = await api.post('/',{
+                    id : user.id
                 });
                 console.log(response.data);
             } catch (error) {
