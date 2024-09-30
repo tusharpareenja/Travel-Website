@@ -24,6 +24,7 @@ const Login = () => {
             console.log(res.data);
             if (res.data.success){
                 sessionStorage.setItem('id', res.data.user.id);
+                sessionStorage.setItem('email', res.data.user.email);
                 toast.success('Login Successful');
                 navigate('/home');
             }

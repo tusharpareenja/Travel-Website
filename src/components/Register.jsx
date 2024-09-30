@@ -28,7 +28,8 @@ const Register = () => {
             })
             if(res.data.success){
                 sessionStorage.setItem('id', res.data.user.id);
-                toast.success('Register Successful. Please login to continue');
+                sessionStorage.setItem('email', res.data.user.email);
+                toast.success('Registration Successful !');
                 navigate('/home');
             }
         } catch (error) {
