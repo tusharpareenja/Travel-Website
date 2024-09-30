@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Clock } from "lucide-react"
 import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon, FolderIcon,UserGroupIcon, MapIcon, ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/solid';
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 const profiles = [
   { name: "Alice", image: "/placeholder.svg?height=64&width=64", age: 28, gender: "Female", budget: "$500", bio: "A travel Geek", style: "luxury" },
   { name: "Bob", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Lover", style: "luxury" },
@@ -333,8 +334,66 @@ export default function CreativeTravelPartnerFinder() {
                   </div>
       <div className=' absolute w-full flex h-screen    flex-col  md:transform-none  items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
       <div className="max-w-md w-full space-y-8 bg-white ml-0 md:ml-10 bg-opacity-90 backdrop-blur-md p-10 rounded-xl shadow-2xl">
-        <div className='text-green-600 underline hover: cursor-pointer'onClick={() => setRequest(true)}>See your requests</div>
-        <div className='w-full flex text-center font-bold text-4xl'>Find your travel buddy</div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className='text-lg underline hover:scale-105 transition-all duration-300 text-center mb-4'>See Requests</button>
+        </DialogTrigger>
+        <DialogContent className='w-fit h-fit rounded-md border bg-white hover:cursor-pointer'>
+          {/* <div className='w-96 h-96 rounded-md border bg-white hover:cursor-pointerr'> */}
+            <TooltipProvider delayDuration={100}>
+              {/* <div className="w-96 h-96 rounded-md border bg-white hover:cursor-pointer"> */}
+                <ScrollArea className="h-full">
+                  <div className="p-1 space-y-2 max-w-96">
+                    <div className="text-lg font-semibold text-center mb-4">Request Pending</div>
+                    {requestHistory.map((request, index) => (
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center justify-between space-x-12">
+                            {/* Left side: Avatar and Name */}
+                            <div className="flex items-center space-x-2">
+                              <Avatar className="w-6 h-6">
+                                <AvatarImage src={request.image} alt={request.name} />
+                                <AvatarFallback>{request.name[0]}</AvatarFallback>
+                              </Avatar>
+                              <span className="text-lg font-medium truncate">{request.name}</span>
+                            </div>
+                            
+                            {/* Right side: Accept buttons */}
+                            <div className="flex space-x-1"> {/* Add a flex container with space between the buttons */}
+                              <div className="bg-green-400 rounded-xl px-2 py-1 text-xs font-medium">
+                                Accept
+                              </div>
+                              <div className="bg-red-500 rounded-xl px-2 py-1 text-xs font-medium">
+                                Reject
+                              </div>
+                            </div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="w-64 p-0">
+                          <div className="flex items-start space-x-3 p-3">
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={request.image} alt={request.name} />
+                              <AvatarFallback>{request.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="space-y-1">
+                              <h4 className="text-sm font-semibold">{request.name}</h4>
+                              <p className="text-xs text-muted-foreground">Gender: {request.gender}</p>
+                              <p className="text-xs text-muted-foreground">Budget: {request.budget}</p>
+                              <p className="text-xs text-muted-foreground">Style: {request.style}</p>
+                              <p className="text-xs text-muted-foreground">Bio: {request.bio}</p>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </ScrollArea>
+              {/* </div> */}
+            </TooltipProvider>
+          {/* </div> */}
+        </DialogContent>
+      </Dialog>
+          <div className='w-full flex text-center font-bold text-4xl'>Find your travel buddy</div>
         <div>
           
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -396,60 +455,6 @@ export default function CreativeTravelPartnerFinder() {
                         </button>
                     </div>
                 </div>
-)}
-{seeRequest && (
-  <div className='fixed inset-0 flex items-center justify-center z-50'>
-    <TooltipProvider>
-      <div className="w-96 h-96 rounded-md border bg-white fixed hover:cursor-pointer">
-        <ScrollArea className="h-full">
-          <div className="p-1 space-y-2">
-            <div className="text-xs font-semibold text-center">Request Pending</div>
-            {requestHistory.map((request, index) => (
-              <Tooltip key={index}>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center justify-between space-x-2">
-                    {/* Left side: Avatar and Name */}
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage src={request.image} alt={request.name} />
-                        <AvatarFallback>{request.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-xs font-medium truncate">{request.name}</span>
-                    </div>
-                    
-                    {/* Right side: Accept buttons */}
-                    <div className="flex space-x-1"> {/* Add a flex container with space between the buttons */}
-                      <div className="bg-green-400 rounded-xl px-2 py-1 text-xs font-medium">
-                        Accept
-                      </div>
-                      <div className="bg-red-500 rounded-xl px-2 py-1 text-xs font-medium">
-                        Reject
-                      </div>
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="w-64 p-0">
-                  <div className="flex items-start space-x-3 p-3">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={request.image} alt={request.name} />
-                      <AvatarFallback>{request.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-semibold">{request.name}</h4>
-                      <p className="text-xs text-muted-foreground">Gender: {request.gender}</p>
-                      <p className="text-xs text-muted-foreground">Budget: {request.budget}</p>
-                      <p className="text-xs text-muted-foreground">Style: {request.style}</p>
-                      <p className="text-xs text-muted-foreground">Bio: {request.bio}</p>
-                    </div>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
-    </TooltipProvider>
-  </div>
 )}
 
 
