@@ -12,6 +12,7 @@ import profile_picture from '../assets/Images/profile_picture.jpeg';
 import '../App.css'
 function Community() {
     const [isModalOpen, setModalOpen] = useState(false);
+    
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -88,11 +89,16 @@ function Community() {
                     }}
                 ></div>
 
-                    <div className='w-5/6 md:w-4/6 h-20 md:h-24 ml-10 md:ml-0 flex mt-2 self-start rounded-2xl'>
-                        <div className='w-14 h-14 md:mt-0 mt-3  md:w-24 md:h-24 rounded-full bg-white flex ml-4' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                        <div className='mt-6 md:mt-8 ml-4 md:text-2xl text-xl font-semibold text-white'>Backpackers United</div>
-                        
+                <div className='w-5/6 md:w-4/6 h-20 md:h-24 ml-10 md:ml-0 flex mt-2 self-start rounded-2xl items-center justify-between'>
+                    <div className='flex items-center'>
+                        <div className='w-14 h-14 md:w-24 md:h-24 rounded-full bg-white flex' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                        <div className='ml-4 md:text-2xl text-xl font-semibold text-white'>Backpackers United</div>
                     </div>
+                    <div>
+                        <button type='button' className='bg-customColor2 p-2 rounded-md hover:cursor-pointer hover:scale-105 duration-300 hover:bg-yellow-600'onClick={() => setModalOpen(true)}>Create</button>
+                    </div>
+                </div>
+
                     <div className='w-5/6 md:w-4/6 h-12 md:h-12 ml-10 md:ml-0 flex mt-4 items-center justify-center self-start rounded-2xl'>
                         <input
                             className='w-1/2 h-full rounded-2xl text-gray-500 bg-customColor1 p-2'
@@ -197,7 +203,80 @@ function Community() {
                     
                     
                 </div>
+
             </div>    
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 text-white">
+                    <div className="bg-black opacity-50 fixed inset-0"></div>
+                    <div className="bg-customColor1 p-8 rounded-xl shadow-lg relative z-50">
+                        <h2 className="text-2xl font-bold mb-4 text-white">Create Post</h2>
+
+                        
+                        <div className="flex flex-col items-center mb-4">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="white"
+                                className="w-16 h-16 mb-4"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M3 7V6a4 4 0 014-4h10a4 4 0 014 4v1m-1 10a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v9z"
+                                />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 13a3 3 0 100-6 3 3 0 000 6z"
+                                />
+                            </svg>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="w-full p-2 border rounded mb-4"
+                            />
+                        </div>
+                        <textarea
+                            className="w-full p-2 border rounded mb-4"
+                            placeholder="Share Your Experience..."
+                        ></textarea>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            onClick={() => setModalOpen(false)} 
+                        >
+                            Submit
+                        </button>
+                        <button
+                            className="ml-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            onClick={() => setModalOpen(false)} 
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+)}
+{logOutBar && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 text-white">
+                    <div className="bg-black opacity-50 fixed inset-0"></div>
+                    <div className="bg-customColor1 p-8 rounded-xl shadow-lg relative z-50">
+                        <h2 className="text-2xl font-bold mb-4 text-white">Are You Sure You Want To LogOut?</h2>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            onClick={() => setLogoutBar(false)} 
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="ml-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            onClick={() => setLogoutBar(false)} 
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+)}
         </>
     )
 }
