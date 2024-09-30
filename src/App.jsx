@@ -14,6 +14,7 @@ import { Calendar } from 'lucide-react'
 import CreativeTravelPartnerFinder from './components/TravelBuddy'
 import GuideBooking from './components/TravelGuide'
 import GuidePage from './components/GuidePage'
+import NainitalPage from './components/NainitalPage'
 function App() {
 
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="/travelbuddy" element={<CreativeTravelPartnerFinder />} />
               <Route path="/" element={<Login />} />
               <Route path="/travelguide" element={<GuideBooking />} />
+              <Route path="/webpage" element={<NainitalPage />} />
               <Route path="/guide" element={<GuidePage />} />
           </Routes>
       </div>

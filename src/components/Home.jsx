@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import profile_picture from '../assets/Images/profile_picture.jpeg';
-import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon,FolderIcon,UserGroupIcon, MapIcon  } from '@heroicons/react/24/solid';
+import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon,FolderIcon,UserGroupIcon, MapIcon, ArrowLeftStartOnRectangleIcon  } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import ziro from '../assets/Images/ziro_valley.jpeg'
@@ -22,12 +22,14 @@ import chandratal from '../assets/Images/chandratal.jpg'
 import mount_abu from '../assets/Images/mount_abu.jpeg'
 import { Calendar } from "./ui/calendar.jsx";
 import HotelBookings from './ui/Bookings.jsx';
-import background from '../assets/images/water back.jpeg'  // Importing correctly
+
+import Logo from '../assets/images/logo.png'  // Importing correctly
 
 
 function Home() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState('less-traffic');
+    const [logOutBar, setLogoutBar] = useState(false)
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
     const { axiosInstance, loading } = useAxiosInstance();
@@ -180,47 +182,59 @@ function Home() {
 
                 {/* Sidebar */}
                 <div className={`fixed inset-y-0 left-0 w-60 h-screen bg-customColor shadow-2xl flex flex-col transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:w-60 z-40`}>
-                    <div className="w-20 h-48 bg-gradient-to-l from-yellow-300/65 via-yellow-900/40 to-customColor rounded-l-full absolute right-0 top-12 opacity-60"></div>
-                    <div className='relative mt-20 md:mt-32'>
-                    <ul className="space-y-6">
+                <div className="flex justify-center items-center mt-1">
+                      <img src={Logo} alt="Logo" className="w-60 h-auto" /> {/* Adjust width/height as necessary */}
+                    </div>
+                    <div className="w-20 h-48 bg-gradient-to-l from-yellow-300/65 via-yellow-900/40 to-customColor rounded-l-full absolute right-0 top-40 opacity-60"></div>
+                    
+                    {/* Logo Section */}
+
+                    
+                    <div className='relative mt-8 md:mt-0'> {/* Adjust margin-top for the content */}
+                      <ul className="space-y-1">
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/home') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/home" className="flex items-center w-full h-full">
-                                <HomeIcon className="w-6 h-6 mr-3" /> Home
-                            </Link>
+                          <Link to="/home" className="flex items-center w-full h-full">
+                            <HomeIcon className="w-6 h-6 mr-3" /> Home
+                          </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/communities', '/community') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/communities" className="flex items-center w-full h-full">
-                                <UserGroupIcon className="w-6 h-6 mr-3" /> Communities
-                            </Link>
+                          <Link to="/communities" className="flex items-center w-full h-full">
+                            <UserGroupIcon className="w-6 h-6 mr-3" /> Communities
+                          </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/feed') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/feed" className="flex items-center w-full h-full">
-                                <FolderIcon className="w-6 h-6 mr-3" /> Feed
-                            </Link>
+                          <Link to="/feed" className="flex items-center w-full h-full">
+                            <FolderIcon className="w-6 h-6 mr-3" /> Feed
+                          </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/travelbuddy') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/travelbuddy" className="flex items-center w-full h-full">
-                                <UsersIcon className="w-6 h-6 mr-3" /> Travel Buddy
-                            </Link>
+                          <Link to="/travelbuddy" className="flex items-center w-full h-full">
+                            <MapIcon className="w-6 h-6 mr-3" /> Travel Buddy
+                          </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/guide') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/guide" className="flex items-center w-full h-full">
-                                <MapIcon className="w-6 h-6 mr-3" /> Travel Guide
-                            </Link>
+                          <Link to="/guide" className="flex items-center w-full h-full">
+                            <UsersIcon className="w-6 h-6 mr-3" /> Travel Guide
+                          </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/hotels') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/hotels" className="flex items-center w-full h-full">
-                                <BuildingOffice2Icon className="w-6 h-6 mr-3" /> Hotels
-                            </Link>
+                          <Link to="/hotels" className="flex items-center w-full h-full">
+                            <BuildingOffice2Icon className="w-6 h-6 mr-3" /> Hotels
+                          </Link>
                         </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/about') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
-                            <Link to="/about" className="flex items-center w-full h-full">
-                                <InformationCircleIcon className="w-6 h-6 mr-3" /> About
-                            </Link>
+                          <Link to="/about" className="flex items-center w-full h-full">
+                            <InformationCircleIcon className="w-6 h-6 mr-3" /> About
+                          </Link>
                         </li>
-                    </ul>
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`} onClick={() => setLogoutBar(true)}>
+                          <Link to="" className="flex items-center w-full h-full">
+                            <ArrowLeftStartOnRectangleIcon className="w-6 h-6 mr-3" /> Logout
+                          </Link>
+                        </li>
+                      </ul>
                     </div>
-                </div>
+                  </div>
 
                 {/* Main Content */}
                 <div className='absolute w-full flex h-screen left-1/2 transform -translate-x-1/2  flex-col space-x-4 md:left-80 md:transform-none  md:top-10 overflow-y-scroll '>
@@ -395,6 +409,26 @@ function Home() {
                    
                 </div>
             </div>
+            {logOutBar && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 text-white">
+                    <div className="bg-black opacity-50 fixed inset-0"></div>
+                    <div className="bg-customColor1 p-8 rounded-xl shadow-lg relative z-50">
+                        <h2 className="text-2xl font-bold mb-4 text-white">Are You Sure You Want To LogOut?</h2>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            onClick={() => setLogoutBar(false)} 
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="ml-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            onClick={() => setLogoutBar(false)} 
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+)}
         </>
     );
 }
