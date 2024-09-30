@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { useAxiosInstance } from './hooks';
 import axios from 'axios';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHyfEhJ7449jY4bX-lyXXJuf5h5zuB1Mk",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const bucket = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
@@ -45,15 +47,20 @@ export const logout = async () => {
 
 export const getUser = () => {
   const user = auth
+  console.log(user)
   if(user.currentUser){
     return {
       id : user.currentUser.uid,
-      email : user.currentUser.email
+      email : user.currentUser.email,
+      name : user.currentUser.displayName,
+      image : user.currentUser.photoURL
     }
-  } else if(sessionStorage.getItem('id') && sessionStorage.getItem('email')) {
+  } else if (sessionStorage.getItem('id') && sessionStorage.getItem('email') && sessionStorage.getItem('name') && sessionStorage.getItem('image')) {
     return {
       id : sessionStorage.getItem('id'),
-      email : sessionStorage.getItem('email')
+      email : sessionStorage.getItem('email'),
+      name : sessionStorage.getItem('name'),
+      image : sessionStorage.getItem('image')
     }
   } else {
     return null
