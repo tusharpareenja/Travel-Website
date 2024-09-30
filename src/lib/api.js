@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'https://trekify-server.onrender.com/api',
 });
 
 // Intercept requests to add the Authorization header

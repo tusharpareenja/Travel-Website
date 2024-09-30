@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon, FolderIcon,UserGroupIcon, MapIcon  } from '@heroicons/react/24/solid';
+import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon, FolderIcon,UserGroupIcon, MapIcon, ArrowLeftStartOnRectangleIcon  } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
@@ -153,37 +153,34 @@ function Communities() {
                         </div>
 
                         <div className='w-40 h-16'>
-                          <div
-                            onClick={()=>setModalOpen(true)}
-                            className='w-40 h-12 flex rounded-3xl font-semibold hover:cursor-pointer hover:scale-105  duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 '>Create Community</div> 
+                          <div className='w-40 h-12 flex rounded-3xl font-semibold hover:cursor-pointer hover:scale-105  duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 ' onClick={() => setModalOpen(true)}>Create Community</div> 
                         </div>
 
 
                         <div className='w-full h-screen grid grid-cols-1 md:grid-cols-2 ml-4 md:ml-0 '>
-                            {communityData.map((community) => (
-                                <Link to={`/community/${community.id}`} key={community.id}>
-                                    <div className='w-72 h-84 rounded-2xl mt-20 bg-customColor1 flex flex-col items-center justify-center'>
-                                        <div 
-                                            className='w-32 h-32 m-4 rounded-full transform transition-transform duration-300 ease-in-out hover:scale-110 hover:cursor-pointer' 
-                                            style={{ backgroundImage: `url(${community.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                                        ></div>
-                                        <div className='w-32 font-bold text-white text-2xl'>{community.name}</div>
-                                        <div className='h-20 grid ml-10 grid-cols-2 mb-4 '>
-                                            {community.tags.slice(0, 4).map((tag, index) => (
-                                                <div key={index} className='w-24 justify-center items-center rounded-2xl m-1 mr-10 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white text-white font-medium h-10 flex bottom-2 border-2 border-blue-500'>
-                                                    {tag}
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className='font-medium text-gray-400 ml-4'>{community.memberCount || 0} Members</div>
-                                        <div
-                                         
-                                            className='w-full h-10 flex justify-center items-center bg-customColor2 rounded-b-2xl mt-2 font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 ease-in-out duration-300 transform transition-transform hover:scale-105'>
-                                            Join Community
-                                        </div>
+                          <Link to="/community">
+                                <div className='w-72 h-84 rounded-2xl mt-20 bg-customColor1 flex flex-col items-center justify-center'>
+                                    <div className='w-32 h-32 m-4 rounded-full transform transition-transform duration-300 ease-in-out hover:scale-110 hover:cursor-pointer' style={{ backgroundImage: `url(${uttarakhand})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                    <div className='w-32 font-bold text-white text-2xl'>BackPackers</div>
+                                    <div className='h-20 grid ml-10 grid-cols-2 mb-4 '>
+                                    <div className='w-24 justify-center items-center rounded-2xl m-1 mr-10 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white text-white font-medium h-10 flex bottom-2 border-2 border-blue-500'>Solo Travel</div>
+                                    <div className='w-24 justify-center items-center rounded-2xl m-1 text-white font-medium h-10 flex bottom-2 border-2 border-blue-500 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white'>Hostels</div>
+                                    <div className='w-24 justify-center items-center rounded-2xl m-1 text-white font-medium h-10 flex bottom-2 border-2 border-blue-500 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white'>Resorts</div>
+                                    <div className='w-24 justify-center items-center rounded-2xl m-1 text-white font-medium h-10 flex bottom-2 border-2 border-blue-500 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white'>Dining</div>
                                     </div>
-                                </Link>
-                            ))}
+                                    <div className='font-medium text-gray-400 ml-4'>10000 Members</div>
+                                    <div className='w-full h-10 flex justify-center items-center bg-customColor2 rounded-b-2xl mt-2 font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 ease-in-out duration-300 transform transition-transform hover:scale-105'>Join Community</div>
+                                </div>
+                            </Link>
+
+                          <div className='w-72 h-80 rounded-2xl mt-20 bg-customColor1'>
+                             
+                          </div>
+
+
+                          <div className='w-72 h-80 rounded-2xl mt-20 bg-customColor1'>
+                             
+                          </div>
                         </div>
 
                 </div>
@@ -194,51 +191,17 @@ function Communities() {
                 <div className="bg-black opacity-50 fixed inset-0"></div>
                 <div className="bg-customColor1 p-8 rounded-xl shadow-lg relative z-50">
                     <h2 className="text-2xl font-bold mb-4 text-white">Create Community</h2>
-                    <input 
-                        onChange={(e)=>setCommunityName(e.target.value)}
-                        className="w-full p-2 border rounded mb-4" placeholder="Community Name" />
-                    <Input 
-                        type='file'     
-                        onChange={(e)=>setCommunityImage(e.target.value)}
-                        className="w-full p-2 border rounded mb-4" 
-                        value={communityImage}
-                    />
-                    
-                    <section className='flex items-center justify-center mb-2 gap-2'>
-                    <Input
-                        type='text'
-                        onChange={(e)=>setTag(e.target.value)}
-                        value={tag}
-                        className="w-full p-2 border rounded" placeholder="Tags"></Input>
-                        <button 
-                            className="bg-blue-500 w-fit text-nowrap text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onClick={() => {
-                                if(tag){
-                                    setTags([...tags, tag]);
-                                    setTag('');
-                                }
-                            }}
-                        >Add Tag</button>
-                    </section>
-                        <div className='flex flex-wrap gap-2 mb-2'>
-                            {tags.map((tag, index) => (
-                                <div key={index} className='bg-blue-500 text-white p-1 px-2 rounded-full hover:bg-blue-600'>
-                                    {tag}
-                                </div>
-                            ))}
-                        </div>
-                    <textarea
-                        onChange={(e)=>setCommunityDescription(e.target.value)}
-                        className="w-full p-2 border rounded mb-4" placeholder="Community Description"></textarea>
+                    <input className="w-full p-2 border rounded mb-4" placeholder="Community Name" />
+                    <textarea className="w-full p-2 border rounded mb-4" placeholder="Community Description"></textarea>
                     <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        onClick={handleCreateCommunity}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={handleCreateCommunity} // Close the modal
                     >
                     Submit
                     </button>
                     <button
-                        className="ml-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                        onClick={() => setModalOpen(false)} // Close the modal
+                    className="ml-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    onClick={() => setModalOpen(false)} // Close the modal
                     >
                     Cancel
                     </button>

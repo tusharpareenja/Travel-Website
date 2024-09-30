@@ -395,13 +395,13 @@ function Home() {
                 {/* Right Panel */}
                 <div className='fixed hidden md:flex flex-col right-0 top-0 h-screen w-80 bg-customColor z-50 shadow-lg p-4 overflow-hidden '>
                     <div className='flex items-center mb-4 mt-7 bg-customColor1 w-44 h-16 rounded-xl'>
-                        <div 
-                            className='w-12 h-12 rounded-full ml-1' 
-                            style={{ backgroundImage: `url(${user.image ?? profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                        ></div>
-                        <div className='ml-4 text-white'>
+                        
+                        {/* //     className='w-12 h-12 rounded-full ml-1' 
+                        //     style={{ backgroundImage: `url(${user.image ?? profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                        // </div> */}
+                        {/* <div className='ml-4 text-white'>
                             <p className='text-lg font-semibold'>{user.name || ""}</p>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Calendar Section */}

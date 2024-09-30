@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,11 +12,29 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Plane, User, DollarSign, Compass, FileText, ArrowRight, ArrowLeft } from 'lucide-react'
 import Logo from '../assets/Images/logo.png'
 import { Link, useNavigate,  useLocation } from 'react-router-dom';
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Clock } from "lucide-react"
 import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon, FolderIcon,UserGroupIcon, MapIcon, ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/solid';
-
+const profiles = [
+  { name: "Alice", image: "/placeholder.svg?height=64&width=64", age: 28, gender: "Female", budget: "$500", bio: "A travel Geek", style: "luxury" },
+  { name: "Bob", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Lover", style: "luxury" },
+  { name: "Charlie", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "Trekker", style: "luxury" },
+  { name: "David", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Geek", style: "luxury" },
+  { name: "Eve", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Geek" },
+]
+const requestHistory = [
+  { name: "Alice", image: "/placeholder.svg?height=64&width=64", age: 28, gender: "Female", budget: "$500", bio: "A travel Geek", style: "luxury" },
+  { name: "Bob", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Lover", style: "luxury" },
+  { name: "Charlie", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "Trekker", style: "luxury" },
+  { name: "David", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Geek", style: "luxury" },
+  { name: "Eve", image: "/placeholder.svg?height=64&width=64",  age: 28, gender: "Female", budget: "$500", bio: "A travel Geek" },
+]
 export default function CreativeTravelPartnerFinder() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [logOutBar, setLogoutBar]  = useState(false);
+    const [seeRequest, setRequest] = useState(false);
     const isActive = (path) => location.pathname === path;
     const [step, setStep] = useState(1)
     const [formData, setFormData] = useState({
@@ -25,6 +44,8 @@ export default function CreativeTravelPartnerFinder() {
       travelStyle: [],
       bio: ''
     })
+    
+    
   
     const handleChange = (e) => {
       const { name, value } = e.target
@@ -193,7 +214,52 @@ export default function CreativeTravelPartnerFinder() {
               className="text-center"
             >
               <h2 className="text-3xl font-bold text-green-600 mb-4">Success!</h2>
-              <p className="text-xl">Your travel partner request has been submitted. Get ready for an amazing adventure!</p>
+              <p className="text-xl">Your travel partner request has been submitted</p>
+              <p>Here are some people</p>
+              <TooltipProvider>
+                                <ScrollArea className="w-full h-40 rounded-md border">
+                            <div className="p-1 space-y-2">
+                              {profiles.map((profile, index) => (
+                                <Tooltip key={index}>
+                                  <TooltipTrigger asChild>
+                                  <div className="flex items-center justify-between space-x-2 rounded-md bg-secondary p-1 cursor-pointer">
+                      {/* Group the profile photo and name together */}
+                      <div className="flex items-center space-x-2">
+                        <Avatar className="w-6 h-6">
+                          <AvatarImage src={profile.image} alt={profile.name} />
+                          <AvatarFallback>{profile.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <span className="text-xs font-medium truncate">{profile.name}</span>
+                      </div>
+                      
+                      {/* Send Request button at the end */}
+                      <div className="bg-green-400 rounded-xl px-2 py-1 text-xs font-medium">Send Request</div>
+                    </div>
+
+              </TooltipTrigger>
+              <TooltipContent side="right" className="w-64 p-0">
+                <div className="flex items-start space-x-3 p-3">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={profile.image} alt={profile.name} />
+                    <AvatarFallback>{profile.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-semibold">{profile.name}</h4>
+                    <p className="text-xs text-muted-foreground">Gender: {profile.gender}</p>
+                    <p className="text-xs text-muted-foreground">Budget: {profile.budget}</p>
+                    <p className="text-xs text-muted-foreground">Style: {profile.style}</p>
+                    <p className="text-xs text-muted-foreground">Bio: {profile.bio}</p>
+                  </div>
+
+                  
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      </ScrollArea>
+    </TooltipProvider>
+
               <Button onClick={() => setStep(1)} className="mt-6">Find Another Partner</Button>
             </motion.div>
           )
@@ -267,8 +333,10 @@ export default function CreativeTravelPartnerFinder() {
                   </div>
       <div className=' absolute w-full flex h-screen    flex-col  md:transform-none  items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
       <div className="max-w-md w-full space-y-8 bg-white ml-0 md:ml-10 bg-opacity-90 backdrop-blur-md p-10 rounded-xl shadow-2xl">
+        <div className='text-green-600 underline hover: cursor-pointer'onClick={() => setRequest(true)}>See your requests</div>
+        <div className='w-full flex text-center font-bold text-4xl'>Find your travel buddy</div>
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Find Your Perfect Travel Partner</h2>
+          
           <p className="mt-2 text-center text-sm text-gray-600">
             {step < 6 ? `Step ${step} of 5` : "You're all set!"}
           </p>
@@ -329,6 +397,61 @@ export default function CreativeTravelPartnerFinder() {
                     </div>
                 </div>
 )}
+{seeRequest && (
+  <div className='fixed inset-0 flex items-center justify-center z-50'>
+    <TooltipProvider>
+      <div className="w-96 h-96 rounded-md border bg-white fixed hover:cursor-pointer">
+        <ScrollArea className="h-full">
+          <div className="p-1 space-y-2">
+            <div className="text-xs font-semibold text-center">Request Pending</div>
+            {requestHistory.map((request, index) => (
+              <Tooltip key={index}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-between space-x-2">
+                    {/* Left side: Avatar and Name */}
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="w-6 h-6">
+                        <AvatarImage src={request.image} alt={request.name} />
+                        <AvatarFallback>{request.name[0]}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs font-medium truncate">{request.name}</span>
+                    </div>
+                    
+                    {/* Right side: Accept buttons */}
+                    <div className="flex space-x-1"> {/* Add a flex container with space between the buttons */}
+                      <div className="bg-green-400 rounded-xl px-2 py-1 text-xs font-medium">
+                        Accept
+                      </div>
+                      <div className="bg-red-500 rounded-xl px-2 py-1 text-xs font-medium">
+                        Reject
+                      </div>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="w-64 p-0">
+                  <div className="flex items-start space-x-3 p-3">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage src={request.image} alt={request.name} />
+                      <AvatarFallback>{request.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-semibold">{request.name}</h4>
+                      <p className="text-xs text-muted-foreground">Gender: {request.gender}</p>
+                      <p className="text-xs text-muted-foreground">Budget: {request.budget}</p>
+                      <p className="text-xs text-muted-foreground">Style: {request.style}</p>
+                      <p className="text-xs text-muted-foreground">Bio: {request.bio}</p>
+                    </div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+    </TooltipProvider>
+  </div>
+)}
+
 
     </>
   )
