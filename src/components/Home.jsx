@@ -22,7 +22,9 @@ import chandratal from '../assets/Images/chandratal.jpg'
 import mount_abu from '../assets/Images/mount_abu.jpeg'
 import { Calendar } from "./ui/calendar.jsx";
 import HotelBookings from './ui/Bookings.jsx';
-import background from '../assets/images/water back.jpeg'  // Importing correctly
+import Logo from '../assets/Images/logo.png' 
+import { getUser } from '@/lib/firebase';
+import api from '@/lib/api';
 
 
 function Home() {
