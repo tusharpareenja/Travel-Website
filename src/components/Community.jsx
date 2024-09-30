@@ -12,7 +12,7 @@ import profile_picture from '../assets/Images/profile_picture.jpeg';
 import '../App.css'
 function Community() {
     const [isModalOpen, setModalOpen] = useState(false);
-    
+    const [logOutBar,setLogoutBar] = useState(false)
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
     const [isSidebarOpen, setSidebarOpen] = useState(false);
