@@ -9,6 +9,7 @@ import Dubai from '../assets/Images/dubai.jpeg';
 import Maldives from '../assets/Images/maldives.jpeg';
 import Champawat from '../assets/Images/champawat.jpg';
 import Valaparai from '../assets/Images/valaparai.jpeg';
+import Logo from '../assets/Images/logo.png'
 import Lonar from '../assets/Images/lonar.jpeg'
 import Chitkul from '../assets/Images/chitkul.jpg'
 import manali from '../assets/Images/manali.jpg';
