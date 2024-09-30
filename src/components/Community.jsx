@@ -16,6 +16,7 @@ function Community() {
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    console.log(location.pathname)
     return (
         <>
          <div className={`w-full h-screen bg-customColor relative overflow-x-hidden overflow-y-hidden ${isModalOpen ? 'blur-md' : ''}`}>

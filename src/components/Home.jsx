@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import profile_picture from '../assets/Images/profile_picture.jpeg';
 import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon,FolderIcon,UserGroupIcon, MapIcon, ArrowLeftStartOnRectangleIcon  } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
@@ -33,30 +33,31 @@ function Home() {
     const isActive = (path) => location.pathname === path;
     const { axiosInstance, loading } = useAxiosInstance();
     const [data, setData] = useState(null);
+    const [user, setUser] = useState(getUser());
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (loading) return
-            const user = getUser()
-            if(!user) {
-                toast.error("Please login to continue")
-                return
+    const fetchData = useCallback(async () => {
+        if (loading) return;
+        try {
+            if (!user) {
+                toast.error("Please login to continue");
+                return;
             }
             console.log(user)
-            try {
-                console.log("Making request");
-                
-                const response = await api.post('/',{
-                    id : user.id
-                });
-                console.log(response.data);
-            } catch (error) {
-                console.error('API request failed:', error);
-            }
-        };
+            
+            const response = await api.post('/', {
+                id: user.id
+            });
+            console.log(response.data);
+            // Handle the response data here if needed
+        } catch (error) {
+            console.error('API request failed:', error);
+            toast.error("Failed to fetch data");
+        }
+    }, [loading]);
 
+    useEffect(() => {
         fetchData();
-    }, [axiosInstance, loading]);
+    }, [fetchData]);
 
     const renderDivs = () =>{
         switch(activeCategory){
@@ -267,7 +268,7 @@ function Home() {
                         </div>
 
                         <div className='w-auto h-20 text-white font-semibold mt-8 md:mt-0 text-3xl ml-10 md:ml-0'>
-                            Hi Marry,
+                            Hi {user ? user.name : ''},
                         </div>
 
                         <div className="w-4/6 text-xl flex-col md:flex text-white font-semibold">
@@ -394,10 +395,10 @@ function Home() {
                     <div className='flex items-center mb-4 mt-7 bg-customColor1 w-44 h-16 rounded-xl'>
                         <div 
                             className='w-12 h-12 rounded-full ml-1' 
-                            style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                            style={{ backgroundImage: `url(${user.image ?? profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                         ></div>
                         <div className='ml-4 text-white'>
-                            <p className='text-lg font-semibold'>Marry</p>
+                            <p className='text-lg font-semibold'>{user.name || ""}</p>
                         </div>
                     </div>
 
