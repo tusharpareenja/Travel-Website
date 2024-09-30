@@ -9,7 +9,6 @@ import Dubai from '../assets/Images/dubai.jpeg';
 import Maldives from '../assets/Images/maldives.jpeg';
 import Champawat from '../assets/Images/champawat.jpg';
 import Valaparai from '../assets/Images/valaparai.jpeg';
-import Logo from '../assets/Images/logo.png'
 import Lonar from '../assets/Images/lonar.jpeg'
 import Chitkul from '../assets/Images/chitkul.jpg'
 import manali from '../assets/Images/manali.jpg';
@@ -23,7 +22,9 @@ import chandratal from '../assets/Images/chandratal.jpg'
 import mount_abu from '../assets/Images/mount_abu.jpeg'
 import { Calendar } from "./ui/calendar.jsx";
 import HotelBookings from './ui/Bookings.jsx';
-import background from '../assets/images/water back.jpeg'  // Importing correctly
+import Logo from '../assets/Images/logo.png' 
+import { getUser } from '@/lib/firebase';
+import api from '@/lib/api';
 
 
 function Home() {
