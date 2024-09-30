@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
+import { v4 } from 'uuid';
+import { bucket } from './firebase';
 
 const useAuth = () => {
   const [authToken, setAuthToken] = useState(null);
@@ -47,4 +50,22 @@ const useAxiosInstance = () => {
   return { axiosInstance, loading };
 };
 
-export { useAuth, useAxiosInstance };
+async function uploadImage(file) {
+  try {
+    console.log("Uploading image")
+    const fileName = `${v4()}_${file.name}`;
+    
+    const storageRef = ref(bucket, `communityimages/${fileName}`);
+
+    const snapshot = await uploadBytes(storageRef, file);
+
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+}
+
+export { useAuth, useAxiosInstance, uploadImage };

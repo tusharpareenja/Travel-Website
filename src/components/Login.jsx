@@ -8,6 +8,7 @@ import { logout, signInWithGoogle } from '../lib/firebase';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useAxiosInstance } from '../lib/hooks';
+import api from '../lib/api';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -17,14 +18,17 @@ const Login = () => {
     const {axios : axiosInstance} = useAxiosInstance()
     const handleLogin = async (e) => {
         try {
-            const res  = await axios.post("http://localhost:8080/auth/login", {
+            const res = await api.post("/auth/login", {
                 email,
                 password
-            })
+            });
             console.log(res.data);
             if (res.data.success){
-                sessionStorage.setItem('id', res.data.user.id);
-                sessionStorage.setItem('email', res.data.user.email);
+                sessionStorage.setItem('id', res.data.id);
+                sessionStorage.setItem('email', res.data.email);
+                sessionStorage.setItem('name', res.data.name);
+                sessionStorage.setItem('image', res.data.image);
+                sessionStorage.setItem('token', res.data.token); // Store the token
                 toast.success('Login Successful');
                 navigate('/home');
             }
@@ -41,23 +45,40 @@ const Login = () => {
           const idToken = await signInWithGoogle();
           console.log('ID token:', idToken);
           
-          const response = await axios.post('http://localhost:8080/auth/signin-with-google', {
+          const res = await axios.post('http://localhost:8080/auth/signin-with-google', {
             idToken
           });
-    
-          const data = await response.data;
-          if (data) {
-            console.log(data);
-            sessionStorage.setItem('id', data.id);
-            console.log('User signed in successfully:', data);
+          console.log(res.data)
+          if (res.data) {
+            console.log(res.data);
+            sessionStorage.setItem('id', res.data.id);
+            sessionStorage.setItem('email', res.data.email);
+            sessionStorage.setItem('name', res.data.name);
+            sessionStorage.setItem('image', res.data.image);
+            sessionStorage.setItem('token', res.data.token);
+            console.log('User signed in successfully:', res.data);
             navigate('/home');
           } else {
-            console.error('Error signing in:', data.error);
+            console.error('Error signing in:', res.data.error);
           }
         } catch (error) {
           console.error('Google sign-in failed:', error);
         }
       };
+
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+            sessionStorage.removeItem('id');
+            sessionStorage.removeItem('email');
+            sessionStorage.removeItem('token');
+            toast.success('Logged out successfully');
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            toast.error('Logout failed');
+        }
+    };
 
     return (
         <div  className='flex justify-center items-center'
@@ -70,8 +91,8 @@ const Login = () => {
             }}
         >
             <div className="bg-slate-600 bg-opacity-75 flex flex-col items-center justify-center text-white h-96 w-96 rounded-xl">
-            <div className="text-3xl font-semibold mb-8">LOGIN</div>
-             <form className="w-3/4 max-w-sm flex flex-col">
+                <div className="text-3xl font-semibold mb-8">Adventure Awaits</div>
+                <form className="w-3/4 max-w-sm flex flex-col">
                     <input
                         type="email"
                         placeholder="Email"

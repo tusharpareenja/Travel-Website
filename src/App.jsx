@@ -22,7 +22,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/communities" element={<Communities />} />
               <Route path="/feed" element={<Feed />} />
-              <Route path="/community" element={<Community />} />
+              <Route path="/community/:id" element={<Community />} />
               <Route path="/calendar" element={<Calendar1 />} />
               <Route path="/travelbuddy" element={<CreativeTravelPartnerFinder />} />
               <Route path="/" element={<Login />} />
