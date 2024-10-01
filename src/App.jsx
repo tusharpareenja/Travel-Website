@@ -12,6 +12,7 @@ import GuideBooking from './components/TravelGuide'
 import GuidePage from './components/GuidePage'
 import NainitalPage from './components/NainitalPage'
 import AdminDashboard from './components/Admin';
+import HotelBookingPage from './components/Hotels';
 function App() {
 
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/travelguide" element={<GuideBooking />} />
               <Route path="/webpage" element={<NainitalPage />} />
               <Route path="/guide" element={<GuidePage />} />
+              <Route path="/hotels" element={<HotelBookingPage />} />
           </Routes>
       </div>
       

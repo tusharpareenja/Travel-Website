@@ -13,8 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Parallax } from 'react-parallax';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+
+import { Input } from "@/components/ui/input";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, useAnimation } from 'framer-motion';
-import { Camera, Hotel, Mountain, Sun, Umbrella, MessageCircle } from 'lucide-react'
+import { Camera, Hotel, Mountain, Sun, Umbrella, MessageCircle, Send } from 'lucide-react'
 
 
 ChartJS.register(
@@ -30,6 +35,20 @@ const NainitalPage = () => {
   const controls = useAnimation();
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+
+  const handleSend = () => {
+    if (input.trim()) {
+      setMessages([...messages, { text: input, sender: 'user' }]);
+      // Simulate AI response
+      setTimeout(() => {
+        setMessages(prev => [...prev, { text: "Thank you for your message. How can I assist you with your Nainital trip today?", sender: 'ai' }]);
+      }, 1000);
+      setInput('');
+    }
+    };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -96,6 +115,46 @@ const NainitalPage = () => {
 
   return (
     <div className="min-h-screen bg-customColor text-white">
+      {/* Message Circle Icon */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <Button 
+          className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center"
+          onClick={() => setIsOpen(true)}
+        >
+          <MessageCircle className="w-10 h-10 text-white" />
+        </Button>
+      </div>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Chat with Nainital AI Guide</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[300px] w-full pr-4">
+            {messages.map((message, index) => (
+              <div key={index} className={`mb-4 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                <div className={`inline-block p-2 rounded-lg ${message.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}>
+                  {message.text}
+                </div>
+              </div>
+            ))}
+          </ScrollArea>
+          <DialogFooter>
+            <div className="flex w-full">
+              <Input 
+                value={input} 
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              />
+              <Button onClick={handleSend} className="ml-2">
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
       <div
         className="h-screen bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: "url('https://tse1.mm.bing.net/th/id/OIP.Hu5A9Cuz8CbQSQ3IdGYtbwHaEK?rs=1&pid=ImgDetMain')" }}
@@ -122,6 +181,12 @@ const NainitalPage = () => {
           }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
+          <h1 className='text-4xl font-bold mb-8 text-center'>About Nainital</h1>
+          <div className='mb-10'>
+            <h3>
+            Nainital is a picturesque hill station located in the Kumaon region of Uttarakhand, India. It is famous for its scenic Naini Lake, surrounded by mountains, and offers stunning views of nature. Nainital is known for its pleasant climate, colonial architecture, and popular tourist spots like Naina Devi Temple, Tiffin Top, and the Snow View Point. The town is a favorite destination for boating, trekking, and exploring the surrounding forests. It's a peaceful retreat for nature lovers and adventure seekers alike.
+            </h3>
+          </div>
           <h2 className="text-4xl font-bold mb-8 text-center">Thrilling Activities</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
             {[
