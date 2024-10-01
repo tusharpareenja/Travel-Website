@@ -8,7 +8,6 @@ import uttarakhand from'../assets/Images/uttarakhand.jpeg'
 import { Input } from './ui/input';
 import { toast } from 'sonner';
 import { uploadImage } from '@/lib/hooks';
-import Logo from '../assets/Images/logo.png'
 import api from '@/lib/api';
 import { Eye, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
@@ -18,7 +17,6 @@ import Logo from '../assets/Images/logo.png'
 function Communities() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setModalOpen] = useState(false);
-    const [logOutBar, setLogoutBar] = useState(false)
     const location = useLocation();
     const [communityData, setCommunityData] = useState([]);
     const [communityName, setCommunityName] = useState('');
@@ -240,26 +238,6 @@ function Communities() {
                 </div>
                 </div>
             )}
-            {logOutBar && (
-                <div className="fixed inset-0 flex items-center justify-center z-50 text-white">
-                    <div className="bg-black opacity-50 fixed inset-0"></div>
-                    <div className="bg-customColor1 p-8 rounded-xl shadow-lg relative z-50">
-                        <h2 className="text-2xl font-bold mb-4 text-white">Are You Sure You Want To LogOut?</h2>
-                        <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onClick={() => setLogoutBar(false)} 
-                        >
-                            Yes
-                        </button>
-                        <button
-                            className="ml-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                            onClick={() => setLogoutBar(false)} 
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
-)}
         </>
     )
 }

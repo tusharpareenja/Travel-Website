@@ -9,7 +9,7 @@ import { PhotoIcon } from '@heroicons/react/24/outline';
 import image1 from '../assets/Images/image1.jpeg'
 import comm_logo from '../assets/Images/comm_logo.jpg'
 import profile_picture from '../assets/Images/profile_picture.jpeg';
-import { Heart, MessageCircle, Send } from 'lucide-react';
+import { Heart, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import '../App.css'
 import Logo from '../assets/Images/logo.png'
@@ -31,8 +31,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from './ui/scroll-area';
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -46,20 +44,6 @@ function Community() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [communityData, setCommunityData] = useState(null);
     const [isLiked, setIsLiked] = useState(false);
-    const [comments, setComments] = useState([
-        { id: 1, author: 'Alice', text: 'Great post!' },
-        { id: 2, author: 'Bob', text: 'I learned a lot from this.' },
-        { id: 3, author: 'Charlie', text: 'Thanks for sharing!' },
-      ]);
-      const [newComment, setNewComment] = useState('');
-      const handleAddComment = () => {
-        if (newComment.trim()) {
-          setComments([...comments, { id: comments.length + 1, author: 'You', text: newComment.trim() }]);
-          setNewComment('');
-        }
-      };
-    
-
     const { id } = useParams();
     const [image, setImage] = useState(null)
     const [text, setText] = useState("")
@@ -373,7 +357,11 @@ function Community() {
                             <UserGroupIcon className="w-6 h-6 mr-3" /> Communities
                           </Link>
                         </li>
-                       
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/feed') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
+                          <Link to="/feed" className="flex items-center w-full h-full">
+                            <FolderIcon className="w-6 h-6 mr-3" /> Feed
+                          </Link>
+                        </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/travelbuddy') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                           <Link to="/travelbuddy" className="flex items-center w-full h-full">
                             <MapIcon className="w-6 h-6 mr-3" /> Travel Buddy
@@ -415,13 +403,6 @@ function Community() {
                     }}
                 ></div>
 
-                <div className='w-5/6 md:w-4/6 h-20 md:h-24 ml-10 md:ml-0 flex mt-2 self-start rounded-2xl items-center justify-between'>
-                    <div className='flex items-center'>
-                        <div className='w-14 h-14 md:w-24 md:h-24 rounded-full bg-white flex' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                        <div className='ml-4 md:text-2xl text-xl font-semibold text-white'>Dehradun</div>
-                    </div>
-                    <div>
-                        <button type='button' className='bg-customColor2 p-2 rounded-md hover:cursor-pointer hover:scale-105 duration-300 hover:bg-yellow-600'onClick={() => setModalOpen(true)}>Create</button>
                 {/* Modify this part to handle null communityData */}
                 {communityData ? (
                   <div className='w-5/6 md:w-4/6 h-20 md:h-24 ml-10 md:ml-0 flex mt-2 self-start rounded-2xl items-center justify-between'>
@@ -506,170 +487,6 @@ function Community() {
                                 <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                                 <div className='mt-6 ml-2 text-white'>John Doe</div>
                             </div>
-                        </div>
-                        <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
-                            <div>
-                            <img src={image1} className='h-40 w-full rounded-t-xl' />
-                            </div>
-                            <div>
-                            <p className='font-semibold text-lg mt-2 text-white'>In the hills of mabaleshwar</p>
-                            </div>
-                            <div className='flex'>
-                            <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
-                            </div>
-                        </div>
-                        
-                 </div>
-                 
-                 <div className='w-4/6 h-screen items-center flex justify-center'>
-      <div className='w-80 md:w-130 md:h-140 mt-0 md:mt-14 ml-20 md:ml-0 rounded-2xl text-white bg-customColor1 h-96 mr-0 flex flex-shrink-0 mb-10 flex-col'>
-        <div 
-          className='w-72 md:w-120 md:h-120 rounded-2xl h-72 m-2 ml-3 mt-3 flex bg-black'
-          style={{ backgroundImage: `url(${image1})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-        ></div>
-        <p className='font-semibold text-lg mt-5 ml-4 text-white'>In the hills of mabaleshwar</p>
-        <div className='w-full h-32 ml-2 flex items-center justify-between'>
-          <div className='flex items-center'>
-            <div 
-              className='w-8 h-8 flex-shrink-0 rounded-full'
-              style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-            ></div>
-            <div className='ml-2 text-white'>Alexa Zeondor</div>
-          </div>
-          <div className='flex items-center mr-8'>
-            <button className='mr-2' onClick={toggleLike}>
-             <motion.div
-                    initial={{ scale: 1 }}
-                    animate={{ scale: isLiked ? [1.2, 1.7, 1.2] : 1 }}
-                    transition={{ duration: 0.3 }}
-                >
-  
-              <Heart 
-                className={`${isLiked ? 'text-red-500' : 'text-white'} transition-colors duration-300`} 
-                size={24} 
-                fill={isLiked ? 'currentColor' : 'none'}
-              />
-              </motion.div>
-            </button>
-            <Dialog>
-      <DialogTrigger asChild>
-        <Button className = "bg-transparent">
-          <MessageCircle className="h-6 w-6" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Comments</DialogTitle>
-          <DialogDescription>
-            View and add comments here.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col h-[300px]">
-          <ScrollArea className="flex-grow">
-            {comments.map((comment) => (
-              <div key={comment.id} className="mb-2 p-2 bg-gray-100 rounded">
-                <strong>{comment.author}:</strong> {comment.text}
-              </div>
-            ))}
-          </ScrollArea>
-          <div className="flex items-center mt-4">
-            <Input
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="flex-grow"
-            />
-            <Button onClick={handleAddComment} size="icon" className="ml-2">
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div className='w-4/6 h-screen items-center flex justify-center'>
-      <div className='w-80 md:w-130 md:h-40 mt-0 md:mt-20 ml-20 md:ml-0 rounded-2xl text-white bg-customColor1 h-40 mr-0 flex flex-shrink-0 mb-10 flex-col'>
-        
-        <p className='font-semibold text-lg mt-5 ml-4 text-white'>In the hills of mabaleshwar</p>
-        <div className='w-full h-32 ml-2 flex items-center justify-between'>
-          <div className='flex items-center'>
-            <div 
-              className='w-8 h-8 flex-shrink-0 rounded-full'
-              style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-            ></div>
-            <div className='ml-2 text-white'>Alexa Zeondor</div>
-          </div>
-          <div className='flex items-center mr-8'>
-            <button className='mr-2' onClick={toggleLike}>
-             <motion.div
-                    initial={{ scale: 1 }}
-                    animate={{ scale: isLiked ? [1.2, 1.7, 1.2] : 1 }}
-                    transition={{ duration: 0.3 }}
-                >
-  
-              <Heart 
-                className={`${isLiked ? 'text-red-500' : 'text-white'} transition-colors duration-300`} 
-                size={24} 
-                fill={isLiked ? 'currentColor' : 'none'}
-              />
-              </motion.div>
-            </button>
-            <Dialog>
-      <DialogTrigger asChild>
-        <Button className = "bg-transparent">
-          <MessageCircle className="h-6 w-6" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Comments</DialogTitle>
-          <DialogDescription>
-            View and add comments here.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col h-[300px]">
-          <ScrollArea className="flex-grow">
-            {comments.map((comment) => (
-              <div key={comment.id} className="mb-2 p-2 bg-gray-100 rounded">
-                <strong>{comment.author}:</strong> {comment.text}
-              </div>
-            ))}
-          </ScrollArea>
-          <div className="flex items-center mt-4">
-            <Input
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="flex-grow"
-            />
-            <Button onClick={handleAddComment} size="icon" className="ml-2">
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-          </div>
-        </div>
-      </div>
-    </div>
-
-   
-   
-                    
-                 
-                
-                    
-                    
-                </div>
-
-            </div>    
                         </div>
                     </div>
                     
