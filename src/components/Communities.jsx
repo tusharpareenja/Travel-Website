@@ -10,6 +10,11 @@ import { toast } from 'sonner';
 import { uploadImage } from '@/lib/hooks';
 import Logo from '../assets/Images/logo.png'
 import api from '@/lib/api';
+import { Eye, Plus } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import { getUser } from '@/lib/firebase';
+import Logo from '../assets/Images/logo.png'
+
 function Communities() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setModalOpen] = useState(false);
@@ -49,22 +54,40 @@ function Communities() {
             console.log(error);
         }
     };
-    useEffect(()=>{
+    const handleCommunityJoin = async (id) => {
+        console.log("id", id)
+        try {
+            const res = await api.post("/community/join" , {
+                communityId : id,
+                userId : getUser().id
+            })
+            console.log(res.data)
+            if(res.data){
+                toast.success('Community joined successfully!');
+            } else {
+                toast.error('Error joining community!');
+            }
+        } catch (error) {
+            toast.error('Error joining community!'+ error);
+        }
+    }
+    useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await api.get('/community');
-                setCommunityData(response.data);
+                const response = await api.get('/community/all');
+                setCommunityData(response.data.communities);
                 console.log(response.data);
             } catch (error) {
                 console.error('Error fetching community data:', error);
+                toast.error('Failed to fetch communities');
             }
         };
         fetchData();
-    },[])
+    }, []);
 
     return (
         <>
-        <div className={`w-full h-screen bg-customColor relative overflow-hidden ${isModalOpen ? 'blur-md' : ''}`}>
+        <div className="w-full h-screen bg-customColor relative overflow-hidden flex">
               <div className='fixed top-4 left-4 z-50 md:hidden'>
                     <button 
                         className='p-2 bg-gray-800 rounded-full text-white hover:bg-gray-700 transition duration-300'
@@ -96,7 +119,11 @@ function Communities() {
                             <UserGroupIcon className="w-6 h-6 mr-3" /> Communities
                           </Link>
                         </li>
-                        
+                        <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/feed') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
+                          <Link to="/feed" className="flex items-center w-full h-full">
+                            <FolderIcon className="w-6 h-6 mr-3" /> Feed
+                          </Link>
+                        </li>
                         <li className={`text-xl font-semibold flex items-center px-6 py-4 rounded-lg shadow-md transition duration-300 cursor-pointer ${isActive('/travelbuddy') ? 'bg-gray-800 text-yellow-300' : 'text-white hover:bg-gray-800 hover:text-yellow-300'}`}>
                           <Link to="/travelbuddy" className="flex items-center w-full h-full">
                             <MapIcon className="w-6 h-6 mr-3" /> Travel Buddy
@@ -126,58 +153,68 @@ function Communities() {
                     </div>
                   </div>
 
-                <div className='absolute w-full flex h-screen left-1/2 transform -translate-x-1/2  flex-col space-x-4 md:left-80 md:transform-none  md:top-10 overflow-y-scroll'>
-                     <div className='h-28 flex'>
-                            <input 
-                                className='w-32 h-10 bg-customColor1 flex relative mr-2 ml-16 mt-4 mb-6 md:ml-0 text-white placeholder-gray-400 px-3 py-2 rounded-xl focus:outline-none text-sm md:w-96 md:h-14 md:px-4 md:py-2'
-                                placeholder='Search Community'
-                            />
-                            <button 
-                                className='w-14 h-10 bg-customColor2 relative mt-4 text-black font-bold rounded-xl hover:bg-yellow-600 transition duration-300 text-sm md:w-28 md:h-14 md:text-base'
-                            >
-                                Search
-                            </button>
+                <div className='absolute w-full h-full flex left-1/2 transform -translate-x-1/2  flex-col space-x-4 md:left-80 md:transform-none  md:top-10 overflow-y-scroll'>
+                     <div className='h-full flex'>
+                        <input 
+                            className='w-32 h-10 bg-customColor1 flex relative mr-2 ml-16 mt-4 mb-6 md:ml-0 text-white placeholder-gray-400 px-3 py-2 rounded-xl focus:outline-none text-sm md:w-96 md:h-14 md:px-4 md:py-2'
+                            placeholder='Search Community'
+                        />
+                        <button 
+                            className='w-14 h-10 bg-customColor2 relative mt-4 text-black font-bold rounded-xl hover:bg-yellow-600 transition duration-300 text-sm md:w-28 md:h-14 md:text-base'
+                        >
+                            Search
+                        </button>
 
-                            {/* Notification Button */}
-                            <button 
-                                className='w-10 h-10 mt-4 bg-customColor1 relative rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition duration-300 text-sm md:w-14 md:h-14 md:text-base'
-                                style={{ marginLeft: '40px' }}
-                            >
-                                <BellIcon className="w-6 h-6 md:w-8 md:h-8" />
-                            </button>
-                        </div>
+                        {/* Notification Button */}
+                        <button 
+                            className='w-10 h-10 mt-4 bg-customColor1 relative rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition duration-300 text-sm md:w-14 md:h-14 md:text-base'
+                            style={{ marginLeft: '40px' }}
+                        >
+                            <BellIcon className="w-6 h-6 md:w-8 md:h-8" />
+                        </button>
+                    </div>
 
-                        <div className='w-40 h-16'>
-                          <div className='w-40 h-12 flex rounded-3xl font-semibold hover:cursor-pointer hover:scale-105  duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 ' onClick={() => setModalOpen(true)}>Create Community</div> 
-                        </div>
-
-
-                        <div className='w-full h-screen grid grid-cols-1 md:grid-cols-2 ml-4 md:ml-0 '>
-                          <Link to="/community">
-                                <div className='w-72 h-84 rounded-2xl mt-20 bg-customColor1 flex flex-col items-center justify-center'>
-                                    <div className='w-32 h-32 m-4 rounded-full transform transition-transform duration-300 ease-in-out hover:scale-110 hover:cursor-pointer' style={{ backgroundImage: `url(${uttarakhand})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                                    <div className='w-32 font-bold text-white text-2xl'>BackPackers</div>
-                                    <div className='h-20 grid ml-10 grid-cols-2 mb-4 '>
-                                    <div className='w-24 justify-center items-center rounded-2xl m-1 mr-10 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white text-white font-medium h-10 flex bottom-2 border-2 border-blue-500'>Solo Travel</div>
-                                    <div className='w-24 justify-center items-center rounded-2xl m-1 text-white font-medium h-10 flex bottom-2 border-2 border-blue-500 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white'>Hostels</div>
-                                    <div className='w-24 justify-center items-center rounded-2xl m-1 text-white font-medium h-10 flex bottom-2 border-2 border-blue-500 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white'>Resorts</div>
-                                    <div className='w-24 justify-center items-center rounded-2xl m-1 text-white font-medium h-10 flex bottom-2 border-2 border-blue-500 hover:bg-blue-500 hover:cursor-pointer hover:scale-110 duration-300 hover:border-white'>Dining</div>
+                    <div className='w-40 h-16'>
+                        <div className='w-40 h-12 flex rounded-3xl font-semibold hover:cursor-pointer hover:scale-105  duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 ' onClick={() => setModalOpen(true)}>Create Community</div> 
+                    </div>
+                    <div className='pt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 max-w-[86rem] h-screen'>
+                        {communityData.map((community) => (
+                                <div className='w-full max-w-sm bg-customColor1 rounded-2xl overflow-hidden shadow-lg transition-transform duration-300 ease-in-out hover:scale-105' key={community.id}>
+                                <div className='p-6'>
+                                    <div className='w-32 h-32 mx-auto mb-4 rounded-full transform transition-transform duration-300 ease-in-out hover:scale-110 hover:cursor-pointer' style={{ backgroundImage: `url(${community.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                    <h2 className='font-bold text-white text-2xl text-center mb-4'>{community.name}</h2>
+                                    <div className='flex flex-wrap justify-center gap-2 mb-4'>
+                                        {community.tags.map((tag, index) => (
+                                            <div key={index} className='px-3 py-1 rounded-full text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-300'>{tag}</div>
+                                        ))}
                                     </div>
-                                    <div className='font-medium text-gray-400 ml-4'>10000 Members</div>
-                                    <div className='w-full h-10 flex justify-center items-center bg-customColor2 rounded-b-2xl mt-2 font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 ease-in-out duration-300 transform transition-transform hover:scale-105'>Join Community</div>
+                                    <p className='text-center font-medium text-gray-400 mb-4'>{community.members.length} Members</p>
                                 </div>
-                            </Link>
-
-                          <div className='w-72 h-80 rounded-2xl mt-20 bg-customColor1'>
-                             
-                          </div>
-
-
-                          <div className='w-72 h-80 rounded-2xl mt-20 bg-customColor1'>
-                             
-                          </div>
-                        </div>
-
+                                <section className='flex justify-center items-center bg-customColor2'>
+                                <Link 
+                                    className='w-full h-12  flex justify-center items-center self-end  font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 transition-all duration-300'
+                                    to={`/community/${community.id}`}
+                                    >
+                                    <Eye/> View
+                                </Link>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <button className='w-full h-12 flex justify-center items-center self-end  font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 transition-all duration-300'><Plus/> Join</button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you sure you want to join community without viewing it ?</AlertDialogTitle>
+                                            <AlertDialogFooter>
+                                                <AlertDialogAction onClick={()=>handleCommunityJoin(community.id)}>Join</AlertDialogAction>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            </AlertDialogFooter>
+                                        </AlertDialogHeader>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                </section>
+                            </div>
+                        ))}
+                    </div>
                 </div>
         </div>
 
