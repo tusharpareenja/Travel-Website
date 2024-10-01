@@ -2,8 +2,8 @@ import React from 'react'
 import { HomeIcon, UsersIcon, BuildingOffice2Icon, InformationCircleIcon, BellIcon, Bars3Icon,FolderIcon,UserGroupIcon, ArrowLeftStartOnRectangleIcon  } from '@heroicons/react/24/solid';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { MapPinIcon, MapIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect , useMemo } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import scene from '../assets/Images/scene.jpeg'
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import image1 from '../assets/Images/image1.jpeg'
@@ -23,22 +23,302 @@ import {
     DialogTrigger,
     Dialog,
 } from "@/components/ui/dialog"
+import { uploadImage } from '@/lib/hooks';
+import { toast } from 'sonner';
+import api from '@/lib/api';
+import { getUser } from '@/lib/firebase';
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { PlusCircle, ThumbsUp, ThumbsDown, Search } from "lucide-react"
 
 function Community() {
     const [isModalOpen, setModalOpen] = useState(false);
+    const [communityData, setCommunityData] = useState(null);
     const [isLiked, setIsLiked] = useState(false);
-
+    const { id } = useParams();
+    const [image, setImage] = useState(null)
+    const [text, setText] = useState("")
+    const [posts, setPosts] = useState([]);
+    const currentUserId = getUser().id;
+    const [comments, setComments] = useState({});
     const [logOutBar, setLogoutBar] = useState(false);
-    const toggleLike = () => {
-        setIsLiked(prev => !prev);
-      };
-    
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [newComment, setNewComment] = useState("");
     console.log(location.pathname)
+    console.log(id)
+
+    // Add this useEffect to fetch community data
+    useEffect(() => {
+        const fetchCommunityData = async () => {
+            try {
+                const response = await api.get(`/community/${id}`);
+                if (response.data.success) {
+                    setCommunityData(response.data.community);
+                    console.log(response.data)
+                } else {
+                    toast.error("Error fetching community data");
+                }
+            } catch (error) {
+                console.error('Error fetching community data:', error);
+                toast.error("Error fetching community data");
+            }
+        };
+
+        fetchCommunityData();
+    }, [id]);
+
+    const handleAddComment = async (postId) => {
+        try {
+            const response = await api.post(`/posts/${postId}/comment`, {
+                userId: currentUserId,
+                text: newComment
+            });
+            if (response.data.success) {
+                const newCommentObj = {
+                    id: response.data.comment.id,
+                    text: newComment,
+                    commentedBy: {
+                        id: currentUserId,
+                        name: getUser().name // Assuming getUser() returns user info including name
+                    }
+                };
+                setPosts(prevPosts => prevPosts.map(post => 
+                    post.id === postId 
+                        ? { ...post, comments: [...(post.comments || []), newCommentObj] }
+                        : post
+                ));
+                setNewComment("");
+                toast.success("Comment added successfully");
+            } else {
+                toast.error("Error adding comment");
+            }
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            toast.error("Error adding comment");
+        }
+    };
+
+    const toggleLike = async (postId) => {
+        try {
+          const post = posts.find(p => p.id === postId);
+          const newIsLiked = !post.isLiked;
+          setPosts(prevPosts => prevPosts.map(post => 
+              post.id === postId ? { ...post, isLiked: newIsLiked } : post
+          ));
+            
+            const response = await api.post(`/posts/${postId}/${newIsLiked ? "like" : "unlike"}`, {
+                userId: currentUserId
+            });
+            
+            if (response.data.success) {
+            } else {
+                toast.error("Error liking post");
+            }
+        } catch (error) {
+            setPosts(prevPosts => prevPosts.map(post => 
+                post.id === postId ? { ...post, isLiked: !post.isLiked } : post
+            ));
+            console.error('Error toggling like:', error);
+            toast.error("Error liking post");
+        }
+    };
+    
+    const handleAddPost = async () => {
+        try {
+            const imageUrl = await image && uploadImage(image)
+            const res = await api.post("/community/post/create" , {
+                communityId : id,
+                userId : getUser().id,
+                text,
+                image : imageUrl
+            })
+            if(res.data.success){
+                setModalOpen(false)
+                toast.success("Post added successfully")
+            }
+            else{
+                toast.error("Error adding post")
+            }
+            console.log(res.data)
+        } catch (error) {
+            toast.error("Error adding post")
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await api.get(`/posts/all`);
+                if(response.data.success){
+                    console.log(response.data.posts)
+                    setPosts(response.data.posts.map(post => ({
+                        ...post,
+                        comments: post.comments || [], // Ensure comments array exists
+                        isLiked: post.likes.map(like => like.userId).includes(currentUserId)
+                    })));
+                }
+                else{
+                    toast.error("Error fetching posts");
+                }
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                toast.error("Error fetching posts");
+            }
+        };
+
+        fetchPosts();
+    }, [currentUserId]);
+
+    // QNA
+  const [questions, setQuestions] = useState([])
+  const [newQuestion, setNewQuestion] = useState({ question: "", keywords: "" })
+  const [newAnswer, setNewAnswer] = useState({ questionId: 0, answer: "" })
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sortBy, setSortBy] = useState("newest")
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const fetchQuestions = async () => {
+    try {
+      const response = await api.get('/qna/');
+      if (response.data.success) {
+        setQuestions(response.data.questions);
+        console.log(response.data.questions)
+      } else {
+        toast.error("Error fetching questions");
+      }
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+      toast.error("Error fetching questions");
+    }
+  };
+
+  const handleCreateQuestion = async () => {
+    try {
+      const response = await api.post('/qna/', {
+        question: newQuestion.question,
+        tags: newQuestion.keywords.split(',').map(keyword => keyword.trim()),
+        communityId: id,
+        userId: currentUserId
+      });
+      if (response.data.success) {
+        setQuestions([response.data.question, ...questions]);
+        setNewQuestion({ question: "", keywords: "" });
+        toast.success("Question added successfully");
+      } else {
+        toast.error("Error adding question");
+      }
+    } catch (error) {
+      console.error('Error creating question:', error);
+      toast.error("Error adding question");
+    }
+  };
+
+  const handleCreateAnswer = async (questionId) => {
+    try {
+      const response = await api.post(`/qna/${questionId}/answer`, {
+        answer: newAnswer.answer,
+        userId: currentUserId
+      });
+      if (response.data.success) {
+        const updatedQuestions = questions.map((q) => {
+          if (q.id === questionId) {
+            return { ...q, answers: [...q.answers, response.data.answer] };
+          }
+          return q;
+        });
+        setQuestions(updatedQuestions);
+        setNewAnswer({ questionId: 0, answer: "" });
+        toast.success("Answer added successfully");
+      } else {
+        toast.error("Error adding answer");
+      }
+    } catch (error) {
+      console.error('Error creating answer:', error);
+      toast.error("Error adding answer");
+    }
+  };
+
+  const handleHelpful = async (questionId, answerId, isHelpful) => {
+    try {
+        const response = await api.post(`/qna/answer/${answerId}/${isHelpful ? 'upvote' : 'downvote'}`, {
+            userId: currentUserId
+        });
+        if (response.data.success) {
+            const updatedQuestions = questions.map((q) => {
+                if (q.id === questionId) {
+                    const updatedAnswers = q.answers.map((a) => {
+                        if (a.id === answerId) {
+                            return {
+                                ...a,
+                                helpfulCount: isHelpful ? a.helpfulCount + 1 : a.helpfulCount,
+                                notHelpfulCount: !isHelpful ? a.notHelpfulCount + 1 : a.notHelpfulCount
+                            };
+                        }
+                        return a;
+                    });
+                    return { ...q, answers: updatedAnswers };
+                }
+                return q;
+            });
+            setQuestions(updatedQuestions);
+            toast.success(isHelpful ? "Answer marked as helpful" : "Answer marked as not helpful");
+        } else {
+            toast.error("Error updating answer helpfulness");
+        }
+    } catch (error) {
+        console.error('Error updating answer helpfulness:', error);
+        toast.error("Error updating answer helpfulness");
+    }
+  };
+
+  const handleNewQuestionChange = (event) => {
+    const { name, value } = event.target
+    setNewQuestion({ ...newQuestion, [name]: value })
+  }
+
+  const handleNewAnswerChange = (event, questionId) => {
+    setNewAnswer({ answer: event.target.value, questionId })
+  }
+
+  const filteredAndSortedQuestions = useMemo(() => {
+    return questions
+      .filter((q) =>q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        q.answers.some(a => a.answer.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+      .sort((a, b) => {
+        if (sortBy === "newest") {
+          return b.id - a.id
+        } else if (sortBy === "mostHelpful") {
+          const aHelpfulness = a.answers.reduce((sum, ans) => sum + ans.helpfulCount, 0)
+          const bHelpfulness = b.answers.reduce((sum, ans) => sum + ans.helpfulCount, 0)
+          return bHelpfulness - aHelpfulness
+        } else if (sortBy === "leastHelpful") {
+          const aHelpfulness = a.answers.reduce((sum, ans) => sum + ans.helpfulCount, 0)
+          const bHelpfulness = b.answers.reduce((sum, ans) => sum + ans.helpfulCount, 0)
+          return aHelpfulness - bHelpfulness
+        }
+        return 0
+      })
+  }, [questions, searchTerm, sortBy])
+  console.log(communityData)
+    
+
     return (
         <>
          <div className={`w-full h-screen bg-customColor relative overflow-x-hidden overflow-y-hidden ${isModalOpen ? 'blur-md' : ''}`}>
@@ -116,28 +396,37 @@ function Community() {
                 <div
                     className='w-5/6 md:w-4/6 md:h-80 h-44 ml-10 flex mt-12 md:ml-0 md:mt-0 md:m-0 bg-black rounded-2xl'
                     style={{
-                        backgroundImage: `url(${scene})`,
+                        backgroundImage: `url(${communityData?.image ?? scene})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         flexShrink: 0
                     }}
                 ></div>
 
-                <div className='w-5/6 md:w-4/6 h-20 md:h-24 ml-10 md:ml-0 flex mt-2 self-start rounded-2xl items-center justify-between'>
-                    <div className='flex items-center'>
-                        <div className='w-14 h-14 md:w-24 md:h-24 rounded-full bg-white flex' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                        <div className='ml-4 md:text-2xl text-xl font-semibold text-white'>Backpackers United</div>
+                {/* Modify this part to handle null communityData */}
+                {communityData ? (
+                  <div className='w-5/6 md:w-4/6 h-20 md:h-24 ml-10 md:ml-0 flex mt-2 self-start rounded-2xl items-center justify-between'>
+                        <div className='flex items-center'>
+                            {communityData.image ? (
+                              <div className='w-14 h-14 md:w-24 md:h-24 rounded-full bg-white flex' style={{ backgroundImage: `url(${communityData.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                            ) : (
+                              <div className='w-14 h-14 md:w-24 md:h-24 rounded-full bg-white flex' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                            )}
+                            <div className='ml-4 md:text-2xl text-xl font-semibold text-white'>{communityData.name}</div>
+                        </div>
+                        <div>
+                            <button type='button' className='bg-customColor2 p-2 rounded-md hover:cursor-pointer hover:scale-105 duration-300 hover:bg-yellow-600' onClick={() => setModalOpen(true)}>Create</button>
+                        </div>
                     </div>
-                    <div>
-                        <button type='button' className='bg-customColor2 p-2 rounded-md hover:cursor-pointer hover:scale-105 duration-300 hover:bg-yellow-600'onClick={() => setModalOpen(true)}>Create</button>
-                    </div>
-                </div>
+                ) : (
+                    <></>
+                )}
 
                     <div className='w-5/6 md:w-4/6 h-12 md:h-12 ml-10 md:ml-0 flex mt-4 items-center justify-center self-start rounded-2xl'>
                         <input
-                            className='w-1/2 h-full rounded-2xl text-gray-500 bg-customColor1 p-2'
+                            className='w-1/2 h-full rounded-2xl bg-customColor1 p-2'
                             placeholder='Share about your Trip'
-                            
+                            onChange={(e) => setText(e.target.value)}
                         />
                         <label htmlFor='imageUpload' className='ml-4 cursor-pointer'>
                             <PhotoIcon className='w-8 h-8 text-white' />
@@ -148,6 +437,7 @@ function Community() {
                             className='hidden'
                             onChange={(e) => {
                                 const file = e.target.files[0];
+                                setImage(file)
                                 console.log(file);
                             }}
                         />
@@ -156,150 +446,269 @@ function Community() {
                     <div>
                         <p className='text-xl font-semibold text-white mt-2 ml-4'> Featured</p>
                     </div>
-                    <div className='w-96 md:w-4/6 h-96  flex overflow-x-auto hide-scrollbar flex-nowrap  mt-2 flex-shrink-0' style={{ scrollBehavior: 'smooth', overflowX: 'auto' }}>
+                    <div className='w-96 md:w-4/6 h-96 flex overflow-x-auto hide-scrollbar flex-nowrap mt-2 flex-shrink-0' style={{ scrollBehavior: 'smooth', overflowX: 'auto' }}>
+                        {posts.filter(post => post.image).map((post) => (
+                            <div key={post.id} className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
+                                <div>
+                                    <img src={post.image} className='h-40 w-full rounded-t-xl' alt={post.text} />
+                                </div>
+                                <div>
+                                    <p className='font-semibold text-lg mt-2 text-white'>{post.text}</p>
+                                </div>
+                                <div className='flex'>
+                                    <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${post.postBy.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                    <div className='mt-6 ml-2 text-white'>{post.postBy.name}</div>
+                                </div>
+                            </div>
+                        ))}
+                        {/* First hardcoded post */}
                         <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
                             <div>
-                            <img src={image1} className='h-40 w-full rounded-t-xl' />
+                                <img src={image1} className='h-40 w-full rounded-t-xl' alt="Mabaleshwar Hills" />
                             </div>
                             <div>
-                            <p className='font-semibold text-lg mt-2 text-white'>In the hills of mabaleshwar</p>
+                                <p className='font-semibold text-lg mt-2 text-white'>In the hills of Mabaleshwar</p>
                             </div>
                             <div className='flex'>
-                            <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
+                                <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
                             </div>
                         </div>
-                        <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
-                            <div>
-                            <img src={image1} className='h-40 w-full rounded-t-xl' />
-                            </div>
-                            <div>
-                            <p className='font-semibold text-lg mt-2 text-white'>In the hills of mabaleshwar</p>
-                            </div>
-                            <div className='flex'>
-                            <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
-                            </div>
-                        </div>
-                        <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
-                            <div>
-                            <img src={image1} className='h-40 w-full rounded-t-xl' />
-                            </div>
-                            <div>
-                            <p className='font-semibold text-lg mt-2 text-white'>In the hills of mabaleshwar</p>
-                            </div>
-                            <div className='flex'>
-                            <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
-                            </div>
-                        </div>
-                        <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
-                            <div>
-                            <img src={image1} className='h-40 w-full rounded-t-xl' />
-                            </div>
-                            <div>
-                            <p className='font-semibold text-lg mt-2 text-white'>In the hills of mabaleshwar</p>
-                            </div>
-                            <div className='flex'>
-                            <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
-                            </div>
-                        </div>
-                        <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
-                            <div>
-                            <img src={image1} className='h-40 w-full rounded-t-xl' />
-                            </div>
-                            <div>
-                            <p className='font-semibold text-lg mt-2 text-white'>In the hills of mabaleshwar</p>
-                            </div>
-                            <div className='flex'>
-                            <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className='mt-6 ml-2 text-white'>Alexa Zeondor</div>
-                            </div>
-                        </div>
-                        
-                 </div>
-                 
-                 <div className='w-4/6 h-screen items-center flex justify-center'>
-      <div className='w-80 md:w-130 md:h-140 mt-0 md:mt-44 ml-20 md:ml-0 rounded-2xl text-white bg-customColor1 h-96 mr-0 flex flex-shrink-0 mb-96 flex-col'>
-        <div 
-          className='w-72 md:w-120 md:h-120 rounded-2xl h-72 m-2 ml-3 mt-3 flex bg-black'
-          style={{ backgroundImage: `url(${image1})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-        ></div>
-        <p className='font-semibold text-lg mt-5 ml-4 text-white'>In the hills of mabaleshwar</p>
-        <div className='w-full h-32 ml-2 flex items-center justify-between'>
-          <div className='flex items-center'>
-            <div 
-              className='w-12 h-12 flex-shrink-0 rounded-full'
-              style={{ backgroundImage: `url(${profile_picture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-            ></div>
-            <div className='ml-2 text-white'>Alexa Zeondor</div>
-          </div>
-          <div className='flex items-center mr-8'>
-            <button className='mr-2' onClick={toggleLike}>
-             <motion.div
-                    initial={{ scale: 1 }}
-                    animate={{ scale: isLiked ? [1.2, 1.7, 1.2] : 1 }}
-                    transition={{ duration: 0.3 }}
-                >
-  
-              <Heart 
-                className={`${isLiked ? 'text-red-500' : 'text-white'} transition-colors duration-300`} 
-                size={24} 
-                fill={isLiked ? 'currentColor' : 'none'}
-              />
-              </motion.div>
-            </button>
-            <Dialog>
-            <DialogTrigger asChild>
-                <button variant="outline"><MessageCircle/></button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>
-                    Make changes to your profile here. Click save when you're done.
-                </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
-                    Name
-                    </Label>
-                    <Input
-                    id="name"
-                    defaultValue="Pedro Duarte"
-                    className="col-span-3"
-                    />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
-                    Username
-                    </Label>
-                    <Input
-                    id="username"
-                    defaultValue="@peduarte"
-                    className="col-span-3"
-                    />
-                </div>
-                </div>
-                <DialogFooter>
-                <Button type="submit">Save changes</Button>
-                </DialogFooter>
-            </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </div>
-    </div>
-                    
-                 
-                
-                    
-                    
-                </div>
 
-            </div>    
+                        {/* Second hardcoded post */}
+                        <div className='w-64 h-64 bg-customColor1 rounded-xl ml-2 mt-2 flex-col flex-shrink-0'>
+                            <div>
+                                <img src={scene} className='h-40 w-full rounded-t-xl' alt="Beach Scene" />
+                            </div>
+                            <div>
+                                <p className='font-semibold text-lg mt-2 text-white'>Sunset at the beach</p>
+                            </div>
+                            <div className='flex'>
+                                <div className='w-8 h-8 mt-5 ml-1 rounded-full' style={{ backgroundImage: `url(${comm_logo})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                <div className='mt-6 ml-2 text-white'>John Doe</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                <div className='w-5/6 md:w-4/6 ml-10 md:ml-0 mb-20'>
+                    <Tabs defaultValue="post" className="w-full">
+                        <TabsList className="w-full bg-customColor1 p-1 rounded-lg">
+                            <TabsTrigger 
+                                value="post" 
+                                className="w-1/2 py-2 text-white data-[state=active]:bg-customColor2 data-[state=active]:text-black rounded-md transition-all"
+                            >
+                                Posts
+                            </TabsTrigger>
+                            <TabsTrigger 
+                                value="comments" 
+                                className="w-1/2 py-2 text-white data-[state=active]:bg-customColor2 data-[state=active]:text-black rounded-md transition-all"
+                            >
+                                QnA
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="post">
+                        <div className=' items-center flex justify-center flex-col'>
+                            {posts.map((post) => (
+                                <div key={post.id} className='w-80 md:w-130 md:max-h-140 mt-4 md:mt-8 ml-20 md:ml-0 rounded-2xl text-white bg-customColor1 max-h-96 mr-0 flex flex-shrink-0 mb-8 flex-col'>
+                                    {post.image && <div 
+                                        className='w-72 md:w-120 md:h-120 rounded-2xl h-72 m-2 ml-3 mt-3 flex bg-black'
+                                        style={{ backgroundImage: `url(${post.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                                    ></div>}
+                                    <p className={`font-semibold text-lg ${post.image ? "p-2" : "px-4 pt-4 text-xl"} mt-5 ml-4 text-white`}>{post.text}</p>
+                                    <div className='w-full h-32 ml-2 flex items-center justify-between'>
+                                        <div className='flex items-center'>
+                                            <div 
+                                                className='w-12 h-12 flex-shrink-0 rounded-full'
+                                                style={{ backgroundImage: `url(${post.postBy.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                                            ></div>
+                                            <div className='ml-2 text-white'>{post.postBy.name}</div>
+                                        </div>
+                                        <div className='flex items-center mr-8'>
+                                            <button className='mr-2' onClick={() => toggleLike(post.id)}>
+                                                <motion.div
+                                                    initial={{ scale: 1 }}
+                                                    animate={{ scale: post.isLiked ? [1.2, 1.7, 1.2] : 1 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <Heart 
+                                                        className={`${post.isLiked ? 'text-red-500' : 'text-white'} transition-colors duration-300`} 
+                                                        size={24} 
+                                                        fill={post.isLiked ? 'currentColor' : 'none'}
+                                                    />
+                                                </motion.div>
+                                            </button>
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <button variant="outline"><MessageCircle/></button>
+                                                </DialogTrigger>
+                                                <DialogContent className="sm:max-w-[425px]">
+                                                    <DialogHeader>
+                                                        <DialogTitle>Comments</DialogTitle>
+                                                        <DialogDescription>
+                                                            View and add comments
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+                                                        {post.comments?.map((comment, index) => (
+                                                            <div key={index} className="mb-4">
+                                                                <p className="font-semibold">{comment.commentedBy?.name || 'Unknown User'}</p>
+                                                                <p>{comment?.text}</p>
+                                                            </div>
+                                                        ))}
+                                                    </ScrollArea>
+                                                    <div className="grid gap-4 py-4">
+                                                        <Textarea
+                                                            placeholder="Add a comment"
+                                                            value={newComment}
+                                                            onChange={(e) => setNewComment(e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <DialogFooter>
+                                                        <Button type="submit" onClick={() => handleAddComment(post.id)}>Add Comment</Button>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="comments">
+                          <div className="min-h-screen bg-customColor1">
+                            <div className="container mx-auto px-4 py-8">
+                              <h1 className="text-4xl font-bold mb-6 text-white text-center">Travel Community Q&A</h1>
+                              
+                              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                                <div className="relative flex-grow">
+                                  <Input
+                                    type="text"
+                                    placeholder="Search questions, answers, or keywords..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 bg-white/90 backdrop-blur-sm border-2 border-purple-300 focus:border-purple-500 rounded-full"
+                                  />
+                                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white" />
+                                </div>
+                                <Select onValueChange={setSortBy} defaultValue={sortBy}>
+                                  <SelectTrigger className="w-full sm:w-[180px] bg-white/90 backdrop-blur-sm border-2 border-purple-300 focus:border-purple-500 rounded-full">
+                                    <SelectValue placeholder="Sort by" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="newest">Newest</SelectItem>
+                                    <SelectItem value="mostHelpful">Most Helpful</SelectItem>
+                                    <SelectItem value="leastHelpful">Least Helpful</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button className="mb-6 bg-green-500 hover:bg-green-600 text-white rounded-full">
+                                    <PlusCircle className="w-4 h-4 mr-2" />
+                                    Ask a Question
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle>Ask a New Question</DialogTitle>
+                                    <DialogDescription>
+                                      Share your travel query with the community!
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                      <label htmlFor="question" className="text-right">
+                                        Question
+                                      </label>
+                                      <Textarea
+                                        id="question"
+                                        name="question"
+                                        value={newQuestion.question}
+                                        onChange={handleNewQuestionChange}
+                                        className="col-span-3"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                      <label htmlFor="keywords" className="text-right">
+                                        Keywords
+                                      </label>
+                                      <Input
+                                        id="keywords"
+                                        name="keywords"
+                                        value={newQuestion.keywords}
+                                        onChange={handleNewQuestionChange}
+                                        placeholder="Comma-separated keywords"
+                                        className="col-span-3"
+                                      />
+                                    </div>
+                                  </div>
+                                  <Button onClick={handleCreateQuestion}>Post Question</Button>
+                                </DialogContent>
+                              </Dialog>
+
+                              <div className="space-y-6">
+                                {filteredAndSortedQuestions.map((question) => (
+                                  <div key={question.id} className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-lg border-2 border-purple-300 hover:border-purple-500 transition-all duration-300">
+                                    <h2 className="text-xl font-semibold mb-2">{question.question}</h2>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                      {question.tags.map((keyword, index) => (
+                                        <span key={index} className="px-2 py-1 bg-gray-300 rounded-full text-sm">
+                                          {keyword}
+                                        </span>
+                                      ))}
+                                    </div>
+                                    
+                                    {question.answers?.map((answer) => (
+                                      <div key={answer.id} className="bg-gray-300 p-4 rounded-md mb-4">
+                                        <p className="text-gray-800 mb-2">{answer.answer}</p>
+                                        <div className="flex items-center justify-between">
+                                          <div className="text-sm">
+                                            {answer.upvotes} found this helpful
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => handleHelpful(question.id, answer.id, true)}
+                                              className="bg-green-100 hover:bg-green-200 text-green-700 border-green-300"
+                                            >
+                                              <ThumbsUp className="w-4 h-4 mr-2" />
+                                              Helpful
+                                            </Button>
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => handleHelpful(question.id, answer.id, false)}
+                                              className="bg-red-100 hover:bg-red-200 text-red-700 border-red-300"
+                                            >
+                                              <ThumbsDown className="w-4 h-4 mr-2" />
+                                              Not Helpful
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+
+                                    <div className="mt-4">
+                                      <Textarea
+                                        placeholder="Write your answer here..."
+                                        value={newAnswer.questionId === question.id ? newAnswer.answer : ""}
+                                        onChange={(e) => handleNewAnswerChange(e, question.id)}
+                                        className="w-full mb-2"
+                                      />
+                                      <Button onClick={() => handleCreateAnswer(question.id)}>Post Answer</Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </TabsContent>
+                        </Tabs>
+                    </div>
+                </div> 
+                </div>
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 text-white">
                     <div className="bg-black opacity-50 fixed inset-0"></div>
@@ -331,15 +740,21 @@ function Community() {
                                 type="file"
                                 accept="image/*"
                                 className="w-full p-2 border rounded mb-4"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    setImage(file)
+                                    console.log(file);
+                                }}
                             />
                         </div>
                         <textarea
-                            className="w-full p-2 border rounded mb-4"
+                            className="w-full p-2 border text-black  rounded mb-4"
                             placeholder="Share Your Experience..."
+                            onChange={(e) => setText(e.target.value)}
                         ></textarea>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onClick={() => setModalOpen(false)} 
+                            onClick={handleAddPost} 
                         >
                             Submit
                         </button>

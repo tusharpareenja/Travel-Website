@@ -48,19 +48,20 @@ export const logout = async () => {
 export const getUser = () => {
   const user = auth
   console.log(user)
-  if(user.currentUser){
-    return {
-      id : user.currentUser.uid,
-      email : user.currentUser.email,
-      name : user.currentUser.displayName,
-      image : user.currentUser.photoURL
-    }
-  } else if (sessionStorage.getItem('id') && sessionStorage.getItem('email') && sessionStorage.getItem('name') && sessionStorage.getItem('image')) {
+  if (sessionStorage.getItem('id') && sessionStorage.getItem('email') && sessionStorage.getItem('name') && sessionStorage.getItem('image')) {
     return {
       id : sessionStorage.getItem('id'),
       email : sessionStorage.getItem('email'),
       name : sessionStorage.getItem('name'),
       image : sessionStorage.getItem('image')
+    }
+  }
+  else if(user.currentUser){
+    return {
+      id : user.currentUser.uid,
+      email : user.currentUser.email,
+      name : user.currentUser.displayName,
+      image : user.currentUser.photoURL
     }
   } else {
     return null
