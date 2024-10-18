@@ -14,17 +14,10 @@ import Chitkul from '../assets/Images/chitkul.jpg'
 import manali from '../assets/Images/manali.jpg';
 import goa from '../assets/Images/goa.jpg'
 import { Link, useNavigate,  useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { useAxiosInstance } from '../lib/hooks';
-import image1 from '../assets/Images/image1.jpeg'
-import solan from '../assets/Images/solan.jpeg'
-import chandratal from '../assets/Images/chandratal.jpg'
-import mount_abu from '../assets/Images/mount_abu.jpeg'
 import { Calendar } from "./ui/calendar.jsx";
 import HotelBookings from './ui/Bookings.jsx';
 import Logo from '../assets/Images/logo.png' 
 import { getUser } from '@/lib/firebase';
-import api from '@/lib/api';
 
 function Home() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -32,38 +25,19 @@ function Home() {
     const [logOutBar, setLogoutBar] = useState(false)
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
-    const { axiosInstance, loading } = useAxiosInstance();
-    const [data, setData] = useState(null);
     const [user, setUser] = useState(getUser());
-    const [topPlaces, setTopPlaces] = useState([]);
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
-    const [places, setPlaces] = useState([]);
 
-    // New predefined array of places
-    const predefinedPlaces = [
-        { name: 'Nainital', image: 'https://example.com/nainital.jpg' },
-        { name: 'Manali', image: 'https://example.com/manali.jpg' },
-        { name: 'Goa', image: 'https://example.com/goa.jpg' },
-        { name: 'Jaipur', image: 'https://example.com/jaipur.jpg' },
-        { name: 'Darjeeling', image: 'https://example.com/darjeeling.jpg' },
-        { name: 'Shimla', image: 'https://example.com/shimla.jpg' },
-        { name: 'Udaipur', image: 'https://example.com/udaipur.jpg' },
-        { name: 'Rishikesh', image: 'https://example.com/rishikesh.jpg' },
-        { name: 'Munnar', image: 'https://example.com/munnar.jpg' },
-        { name: 'Ladakh', image: 'https://example.com/ladakh.jpg' }
-    ];
-
-    useEffect(() => {
-        // Set the places state with the predefined array
-        setPlaces(predefinedPlaces);
-    }, []);
-
-    const handlePlaceClick = (place) => {
-        navigate(`/places/${place.name.toLowerCase()}`);
-    };
-
-    const placesToDisplay = places.slice(0, 5); // Display top 5 places
+    useEffect(()=>{
+        try {
+            const userr = getUser()
+            setUser(userr)
+        } catch (e) {
+            console.error(e)
+            toast.error(e)
+        }
+    },[setUser])
 
     const renderDivs = () =>{
         switch(activeCategory){
@@ -71,57 +45,57 @@ function Home() {
                 return (
                     
                     <div className='w-full h-96  grid grid-cols-1 md:grid-cols-2  gap-1 ml-10 md:ml-0  '>
-                                    <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer   '>
-                                       <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${Champawat})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
-                                        <div className='text-lg m-1 ' >Champwat
-                                        <div className='flex'>
-                                        <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
-                                        <p className='text-base text-gray-500'>India</p>
-                                        </div>
-                                         
-                                         <p className='text-sm'>Uttarakhand</p>
-                                        </div>
-                                           
-                                    </div>
-
-                                    <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer   '>
-                                       <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${ziro})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
-                                        <div className='text-lg m-1 ' >Ziro Valley
-                                        <div className='flex'>
-                                        <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
-                                        <p className='text-base text-gray-500'>India</p>
-                                        </div>
-                                         
-                                         <p className='text-sm'>Arunachal Pardesh</p>
-                                        </div>
-                                           
-                                    </div>
-
-                                    <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer   '>
-                                       <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${Valaparai})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
-                                        <div className='text-lg m-1 ' >Valaparai
-                                        <div className='flex'>
-                                        <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
-                                        <p className='text-base text-gray-500'>India</p>
-                                        </div>
-                                         
-                                         <p>Gujarat</p>
-                                        </div>
-                                           
-                                    </div>
-                                    <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer   '>
-                                       <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${Lonar})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
-                                        <div className='text-lg m-1 ' >Lonar Lake
-                                        <div className='flex'>
-                                        <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
-                                        <p className='text-base text-gray-500'>India</p>
-                                        </div>
-                                         
-                                         <p>Maharasthra</p>
-                                        </div>
-                                           
-                                    </div>
+                        <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer ' onClick={()=>window.location.href = ("/places/uttarakhand")}>
+                            <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${Champawat})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
+                            <div className='text-lg m-1 ' >Champwat
+                            <div className='flex'>
+                            <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
+                            <p className='text-base text-gray-500'>India</p>
                             </div>
+                                
+                                <p className='text-sm'>Uttarakhand</p>
+                            </div>
+                                
+                        </div>
+
+                        <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer   '  onClick={()=>window.location.href = ("/places/arunachalpradesh")}>
+                            <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${ziro})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
+                            <div className='text-lg m-1 ' >Ziro Valley
+                            <div className='flex'>
+                            <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
+                            <p className='text-base text-gray-500'>India</p>
+                            </div>
+                                
+                                <p className='text-sm'>Arunachal Pardesh</p>
+                            </div>
+                                
+                        </div>
+
+                        <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer'  onClick={()=>window.location.href = ("/places/gujarat")}>
+                            <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${Valaparai})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
+                            <div className='text-lg m-1 ' >Valaparai
+                            <div className='flex'>
+                            <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
+                            <p className='text-base text-gray-500'>India</p>
+                            </div>
+                                
+                                <p>Gujarat</p>
+                            </div>
+                                
+                        </div>
+                        <div className='w-56 h-24 m-5 bg-customColor1 rounded-2xl flex hover:cursor-pointer   '  onClick={()=>window.location.href = ("/places/maharashtra")}>
+                            <div className='w-20 m-2 rounded-2xl bg-black transform transition-transform duration-300 ease-in-out hover:scale-110' style={{backgroundImage: `url(${Lonar})`, backgroundSize:'cover', backgroundPosition: 'center'}}> </div>
+                            <div className='text-lg m-1 ' >Lonar Lake
+                            <div className='flex'>
+                            <MapPinIcon className='w-4 h-7 ml-1 text-red-500' />
+                            <p className='text-base text-gray-500'>India</p>
+                            </div>
+                                
+                                <p>Maharasthra</p>
+                            </div>
+                                
+                        </div>
+                    </div>
                   );
 
                   case 'most-popular':
@@ -257,17 +231,17 @@ function Home() {
                 {/* Main Content */}
                 <div className='absolute w-full flex h-screen left-1/2 transform -translate-x-1/2  flex-col space-x-4 md:left-80 md:transform-none  md:top-10 overflow-y-scroll '>
                     <div className='flex flex-col h-screen overflow-y-auto'>
-                        <div className='h-28 flex'>
-                            <form onSubmit={handleSearch}>
+                        <div className='h-28 flex mb-10'>
+                            <form onSubmit={handleSearch} className='flex items-center'>
                                 <input 
-                                    className='w-32 h-10 bg-customColor1 flex relative mr-2 ml-16 mt-4 mb-6 md:ml-0 text-white placeholder-gray-400 px-3 py-2 rounded-xl focus:outline-none text-sm md:w-96 md:h-14 md:px-4 md:py-2'
+                                    className='w-32 h-10 bg-customColor1 flex relative mr-2 ml-16 md:ml-0 text-white placeholder-gray-400 px-3 py-2 rounded-xl focus:outline-none text-sm md:w-96 md:h-14 md:px-4 md:py-2'
                                     placeholder='Search'
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                                 <button 
-                                    className='w-14 h-10 bg-customColor2 relative mt-4 text-black font-bold rounded-xl hover:bg-yellow-600 transition duration-300 text-sm md:w-28 md:h-14 md:text-base'
+                                    className='w-14 h-10 bg-customColor2 relative text-black font-bold rounded-xl hover:bg-yellow-600 transition duration-300 text-sm md:w-28 md:h-14 md:text-base'
                                     type="submit"
                                 >
                                     Search
@@ -276,14 +250,14 @@ function Home() {
 
                             {/* Notification Button */}
                             <button 
-                                className='w-10 h-10 mt-4 bg-customColor1 relative rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition duration-300 text-sm md:w-14 md:h-14 md:text-base'
+                                className='w-10 h-10 bg-customColor1 relative rounded-full flex items-center justify-center text-white hover:bg-yellow-500 transition duration-300 text-sm md:w-14 md:h-14 md:text-base'
                                 style={{ marginLeft: '40px' }}
                             >
                                 <BellIcon className="w-6 h-6 md:w-8 md:h-8" />
                             </button>
                         </div>
 
-                        <div className='w-auto h-20 text-white font-semibold mt-8 md:mt-0 text-3xl ml-10 md:ml-0'>
+                        <div className='w-auto h-20 text-white font-semibold mt-12 md:mt-0 text-3xl ml-10 md:ml-0'>
                             Hi {user ? user.name : ''},
                         </div>
 
@@ -302,6 +276,7 @@ function Home() {
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         }}
+                                        onClick={()=>window.location.href = ("/places/bali")}
                                     ></div>
                                     <div className="font-semibold ml-2 mb-6">BALI</div>
                                     <div className="w-full h-8 text-base bg-customColor2 rounded-b-2xl flex justify-center items-center font-semibold text-black">
@@ -317,6 +292,7 @@ function Home() {
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         }}
+                                        onClick={()=>window.location.href = ("/places/dubai")}
                                     ></div>
                                     <div className="font-semibold ml-2 mb-6">DUBAI</div>
                                     <div className="w-full h-8 text-base bg-customColor2 rounded-b-2xl flex justify-center items-center font-semibold text-black">
@@ -332,6 +308,7 @@ function Home() {
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
                                     }}
+                                    onClick={()=>window.location.href = ("/places/maldives")}
                                 ></div>
                                     <div className="font-semibold ml-2 mb-6">MALDIVES</div>
                                     <div className="w-full h-8 text-base bg-customColor2 rounded-b-2xl flex justify-center items-center font-semibold text-black">
@@ -346,30 +323,6 @@ function Home() {
                             </div>
 
                             {renderDivs()}
-                            <div className='w-5/6 h-120 flex mb-20 mt-44 md:mt-0 flex-col'>
-                                <div className='w-full flex ml-10 md:ml-0'>TOP 5 DESTINATIONS TO VISIT</div>
-                                <div className='w-96 md:w-full h-96 flex overflow-x-auto hide-scrollbar flex-nowrap mt-16 flex-shrink-0' style={{ scrollBehavior: 'smooth', overflowX: 'auto' }}>
-                                    {placesToDisplay.map((place, index) => (
-                                        <div 
-                                            key={index} 
-                                            className='w-80 h-96 bg-customColor1 rounded-3xl cursor-pointer ml-2 mt-2 flex-col flex-shrink-0'
-                                            onClick={() => handlePlaceClick(place)}
-                                        >
-                                            <div>
-                                                <img src={place.image} alt={place.name} className='h-64 w-full rounded-t-xl object-cover' />
-                                            </div>
-                                            <div>
-                                                <p className='font-semibold text-lg mt-2 ml-2 text-white'>{place.name}</p>
-                                            </div>
-                                            <div className='flex'>
-                                                <div className='mt-10 ml-2 text-white text-base bg-green-500 rounded-xl p-1'>
-                                                    Popular Destination
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
                     </div>
                   

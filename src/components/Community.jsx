@@ -14,15 +14,7 @@ import { motion } from 'framer-motion';
 import '../App.css'
 import Logo from '../assets/Images/logo.png'
 import { Button } from "@/components/ui/button"
-import {
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    Dialog,
-} from "@/components/ui/dialog"
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Dialog, } from "@/components/ui/dialog"
 import { uploadImage } from '@/lib/hooks';
 import { toast } from 'sonner';
 import api from '@/lib/api';
@@ -31,25 +23,17 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue,} from "@/components/ui/select"
 import { PlusCircle, ThumbsUp, ThumbsDown, Search } from "lucide-react"
 
 function Community() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [communityData, setCommunityData] = useState(null);
-    const [isLiked, setIsLiked] = useState(false);
     const { id } = useParams();
     const [image, setImage] = useState(null)
     const [text, setText] = useState("")
     const [posts, setPosts] = useState([]);
-    const currentUserId = getUser().id;
-    const [comments, setComments] = useState({});
+    const [currentUserId,setCurrentUserId ] = useState("")
     const [logOutBar, setLogoutBar] = useState(false);
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
@@ -58,8 +42,13 @@ function Community() {
     console.log(location.pathname)
     console.log(id)
 
-    // Add this useEffect to fetch community data
     useEffect(() => {
+      const currentuser = getUser()
+      if(!currentuser) {
+        toast.error("Unauthorised !")
+        return null
+      }
+        setCurrentUserId()
         const fetchCommunityData = async () => {
             try {
                 const response = await api.get(`/community/${id}`);
@@ -528,7 +517,7 @@ function Community() {
                                             <div className='ml-2 text-white'>{post.postBy.name}</div>
                                         </div>
                                         <div className='flex items-center mr-8'>
-                                            <button className='mr-2' onClick={() => toggleLike(post.id)}>
+                                            <button className='mr-4 flex gap-2' onClick={() => toggleLike(post.id)}>
                                                 <motion.div
                                                     initial={{ scale: 1 }}
                                                     animate={{ scale: post.isLiked ? [1.2, 1.7, 1.2] : 1 }}
@@ -540,10 +529,11 @@ function Community() {
                                                         fill={post.isLiked ? 'currentColor' : 'none'}
                                                     />
                                                 </motion.div>
+                                                <p>{post.likes.length}</p>
                                             </button>
                                             <Dialog>
                                                 <DialogTrigger asChild>
-                                                    <button variant="outline"><MessageCircle/></button>
+                                                    <button variant="outline" className='flex gap-2'><MessageCircle/> {post.comments.length}</button>
                                                 </DialogTrigger>
                                                 <DialogContent className="sm:max-w-[425px]">
                                                     <DialogHeader>

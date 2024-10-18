@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Plane, User, DollarSign, Compass, FileText, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Plane, User, DollarSign, Compass, FileText, ArrowRight, ArrowLeft, IndianRupee } from 'lucide-react'
 import Logo from '../assets/Images/logo.png'
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -26,6 +26,7 @@ export default function CreativeTravelPartnerFinder() {
     const [logOutBar, setLogoutBar] = useState(false);
     const [seeRequest, setRequest] = useState(false);
     const location = useLocation();
+    const [travelBuddies, setTravelBuddies] = useState([]);
     const isActive = (path) => location.pathname === path;
     const [step, setStep] = useState(1)
     const [formData, setFormData] = useState({
@@ -55,6 +56,7 @@ export default function CreativeTravelPartnerFinder() {
       fetchPendingRequests();
       fetchAvailableProfiles();
       getAISuggestions(); // Add this line
+      fetchTravelBuddies();
     }, []);
 
     const fetchProfiles = async () => {
@@ -75,6 +77,19 @@ export default function CreativeTravelPartnerFinder() {
       }
     };
 
+    const fetchTravelBuddies = async () => {
+      try {
+        const response = await api.get(`/buddy/${userId}`);
+        if (response.data.success) {
+          setTravelBuddies(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch travel buddies:', error);
+        toast.error('Failed to fetch travel buddies');
+      }
+    };
+
+
     const fetchPendingRequests = async () => {
       try {
         const response = await api.get(`/buddy/requests/${userId}`);
@@ -82,9 +97,11 @@ export default function CreativeTravelPartnerFinder() {
           setPendingRequests(response.data.data);
         } else {
           console.error('Failed to fetch pending requests:', response.data.error);
+          toast.error('Failed to fetch pending requests');
         }
       } catch (error) {
         console.error('Failed to fetch pending requests:', error);
+        toast.error('Failed to fetch pending requests');
       }
     };
 
@@ -131,7 +148,7 @@ export default function CreativeTravelPartnerFinder() {
 
     const sendRequest = async (receiverId) => {
       try {
-        const response = await api.post(`/buddy/request/${userId}`, { receiverId });
+        const response = await api.post(`/buddy/request`, { senderId: userId, receiverId });
         if (response.data.success) {
           console.log('Request sent successfully');
           toast.success('Request sent successfully');
@@ -142,15 +159,23 @@ export default function CreativeTravelPartnerFinder() {
       }
     };
 
-    const handleRequestAction = async (requestId, status) => {
+    const handleRequestAction = async (requestId, action) => {
       try {
-        const response = await api.put(`/buddy/request/${requestId}`, { status, userId });
+        console.log("requestId", requestId)
+        console.log("action", action)
+        console.log("userId", userId)
+        const response = await api.put(`/buddy/request/${requestId}`, { action, userId });
         if (response.data.success) {
           console.log('Request updated successfully');
+          toast.success(`Request ${action}ed successfully`);
           fetchPendingRequests(); // Refresh pending requests after action
+        } else {
+          console.error('Failed to update request:', response.data.error);
+          toast.error(response.data.error || `Failed to ${action} request`);
         }
       } catch (error) {
         console.error('Failed to update request:', error);
+        toast.error(error.response?.data?.error || `Failed to ${action} request`);
       }
     };
   
@@ -296,7 +321,7 @@ export default function CreativeTravelPartnerFinder() {
               exit={{ opacity: 0, x: -50 }}
             >
               <Label htmlFor="budget" className="text-xl mb-2 flex items-center">
-                <DollarSign className="mr-2" /> What's your daily budget?
+                <IndianRupee className="mr-2" /> What's your daily budget?
               </Label>
               <Input
                 type="number"
@@ -404,7 +429,7 @@ export default function CreativeTravelPartnerFinder() {
                               <h4 className="text-sm font-semibold">{profile.user.name}</h4>
                               <p className="text-xs text-muted-foreground">Destination: {profile.destination}</p>
                               <p className="text-xs text-muted-foreground">Gender: {profile.gender.join(', ')}</p>
-                              <p className="text-xs text-muted-foreground">Budget: ${profile.budget}</p>
+                              <p className="text-xs text-muted-foreground">Budget: ₹{profile.budget}</p>
                               <p className="text-xs text-muted-foreground">Style: {profile.travelStyle.join(', ')}</p>
                               <p className="text-xs text-muted-foreground">Bio: {profile.bio}</p>
                               {profile.aiSuggestion && (
@@ -513,10 +538,10 @@ export default function CreativeTravelPartnerFinder() {
                             
                             {/* Right side: Accept buttons */}
                             <div className="flex space-x-1"> {/* Add a flex container with space between the buttons */}
-                              <button onClick={() => handleRequestAction(request.id, 'accepted')} className="bg-green-400 rounded-xl px-2 py-1 text-xs font-medium">
+                              <button onClick={() => handleRequestAction(request.id, 'accept')} className="bg-green-400 rounded-xl px-2 py-1 text-xs font-medium">
                                 Accept
                               </button>
-                              <button onClick={() => handleRequestAction(request.id, 'rejected')} className="bg-red-500 rounded-xl px-2 py-1 text-xs font-medium">
+                              <button onClick={() => handleRequestAction(request.id, 'reject')} className="bg-red-500 rounded-xl px-2 py-1 text-xs font-medium">
                                 Reject
                               </button>
                             </div>
@@ -530,10 +555,55 @@ export default function CreativeTravelPartnerFinder() {
                             </Avatar>
                             <div className="space-y-1">
                               <h4 className="text-sm font-semibold">{request.sender.name}</h4>
-                              <p className="text-xs text-muted-foreground">Gender: {request.sender.gender}</p>
-                              <p className="text-xs text-muted-foreground">Budget: {request.sender.budget}</p>
-                              <p className="text-xs text-muted-foreground">Style: {request.sender.style}</p>
-                              <p className="text-xs text-muted-foreground">Bio: {request.sender.bio}</p>
+                              <p className="text-xs text-muted-foreground">Email: {request.sender.email}</p>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </ScrollArea>
+              {/* </div> */}
+            </TooltipProvider>
+          {/* </div> */}
+        </DialogContent>
+      </Dialog>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className='text-lg ml-40 underline hover:scale-105 transition-all duration-300 text-center mb-4'>See Buddies</button>
+        </DialogTrigger>
+        <DialogContent className='w-fit h-fit rounded-md border bg-white hover:cursor-pointer'>
+          {/* <div className='w-96 h-96 rounded-md border bg-white hover:cursor-pointerr'> */}
+            <TooltipProvider delayDuration={100}>
+              {/* <div className="w-96 h-96 rounded-md border bg-white hover:cursor-pointer"> */}
+                <ScrollArea className="h-full">
+                  <div className="p-1 space-y-2 max-w-96">
+                    <div className="text-lg font-semibold text-center mb-4">Your Buddies</div>
+                    {travelBuddies.map((buddy) => (
+                      <Tooltip key={buddy.id}>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center justify-between space-x-12">
+                            {/* Left side: Avatar and Name */}
+                            <div className="flex items-center space-x-2">
+                              <Avatar className="w-6 h-6">
+                                <AvatarImage src={buddy.user.image} alt={buddy.user.name} />
+                                <AvatarFallback>{buddy.user.name[0]}</AvatarFallback>
+                              </Avatar>
+                              <span className="text-lg font-medium truncate">{buddy.user.name}</span>
+                            </div>
+                            
+                            
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="w-64 p-0">
+                          <div className="flex items-start space-x-3 p-3">
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={buddy.user.image} alt={buddy.user.name} />
+                              <AvatarFallback>{buddy.user.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="space-y-1">
+                              <h4 className="text-sm font-semibold">{buddy.user.name}</h4>
+                              <p className="text-xs text-muted-foreground">Email: {buddy.user.email}</p>
                             </div>
                           </div>
                         </TooltipContent>

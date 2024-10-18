@@ -13,12 +13,14 @@ import { Eye, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { getUser } from '@/lib/firebase';
 import Logo from '../assets/Images/logo.png'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 function Communities() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setModalOpen] = useState(false);
     const location = useLocation();
     const [communityData, setCommunityData] = useState([]);
+    const [myJoinedCommunites,setJoinedCommunities] = useState([])
     const [communityName, setCommunityName] = useState('');
     const [communityImage, setCommunityImage] = useState('');
     const [communityDescription, setCommunityDescription] = useState('');
@@ -77,6 +79,11 @@ function Communities() {
                 const response = await api.get('/community/all');
                 setCommunityData(response.data.communities);
                 console.log(response.data);
+                const resp = await api.post('/community/my' , {
+                    id : getUser().id
+                });
+                console.log(resp.data)
+                setJoinedCommunities(resp.data.communities)
             } catch (error) {
                 console.error('Error fetching community data:', error);
                 toast.error('Failed to fetch communities');
@@ -154,7 +161,7 @@ function Communities() {
                   </div>
 
                 <div className='absolute w-full h-full flex left-1/2 transform -translate-x-1/2  flex-col space-x-4 md:left-80 md:transform-none  md:top-10 overflow-y-scroll'>
-                     <div className='h-full flex'>
+                     <div className='h-fit flex'>
                         <input 
                             className='w-32 h-10 bg-customColor1 flex relative mr-2 ml-16 mt-4 mb-6 md:ml-0 text-white placeholder-gray-400 px-3 py-2 rounded-xl focus:outline-none text-sm md:w-96 md:h-14 md:px-4 md:py-2'
                             placeholder='Search Community'
@@ -178,6 +185,23 @@ function Communities() {
                         <div className='w-40 h-12 flex rounded-3xl font-semibold hover:cursor-pointer hover:scale-105  duration-300 hover:bg-yellow-400 items-center justify-center  bg-customColor2 ' onClick={() => setModalOpen(true)}>Create Community</div> 
                     </div>
                     <div className='pt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 max-w-[86rem] h-screen'>
+                    <Tabs defaultValue="all" className="w-[80vw]">
+                        <TabsList className="w-full bg-customColor1 p-1 rounded-lg">
+                            <TabsTrigger 
+                                value="all" 
+                                className="w-1/2 py-2 text-white data-[state=active]:bg-customColor2 data-[state=active]:text-black rounded-md transition-all"
+                            >
+                                All communities
+                            </TabsTrigger>
+                            <TabsTrigger 
+                                value="my" 
+                                className="w-1/2 py-2 text-white data-[state=active]:bg-customColor2 data-[state=active]:text-black rounded-md transition-all"
+                            >
+                                My communities
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="all">
+                        <div className='pt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 max-w-[86rem] h-screen'>
                         {communityData.map((community) => (
                                 <div className='w-full max-w-sm bg-customColor1 rounded-2xl overflow-hidden shadow-lg transition-transform duration-300 ease-in-out hover:scale-105' key={community.id}>
                                 <div className='p-6'>
@@ -214,6 +238,49 @@ function Communities() {
                                 </section>
                             </div>
                         ))}
+                    </div>
+                        </TabsContent>
+                        <TabsContent value="my">
+                        <div className='pt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 max-w-[86rem] h-screen'>
+                        {myJoinedCommunites.map((community) => (
+                                <div className='w-full max-w-sm bg-customColor1 rounded-2xl overflow-hidden shadow-lg transition-transform duration-300 ease-in-out hover:scale-105' key={community.id}>
+                                <div className='p-6'>
+                                    <div className='w-32 h-32 mx-auto mb-4 rounded-full transform transition-transform duration-300 ease-in-out hover:scale-110 hover:cursor-pointer' style={{ backgroundImage: `url(${community.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                                    <h2 className='font-bold text-white text-2xl text-center mb-4'>{community.name}</h2>
+                                    <div className='flex flex-wrap justify-center gap-2 mb-4'>
+                                        {community.tags.map((tag, index) => (
+                                            <div key={index} className='px-3 py-1 rounded-full text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-300'>{tag}</div>
+                                        ))}
+                                    </div>
+                                    <p className='text-center font-medium text-gray-400 mb-4'>{community.members.length} Members</p>
+                                </div>
+                                <section className='flex justify-center items-center bg-customColor2'>
+                                <Link 
+                                    className='w-full h-12  flex justify-center items-center self-end  font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 transition-all duration-300'
+                                    to={`/community/${community.id}`}
+                                    >
+                                    <Eye/> View
+                                </Link>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <button className='w-full h-12 flex justify-center items-center self-end  font-semibold text-xl hover:cursor-pointer hover:bg-yellow-400 transition-all duration-300'><Plus/> Join</button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you sure you want to join community without viewing it ?</AlertDialogTitle>
+                                            <AlertDialogFooter>
+                                                <AlertDialogAction onClick={()=>handleCommunityJoin(community.id)}>Join</AlertDialogAction>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            </AlertDialogFooter>
+                                        </AlertDialogHeader>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                </section>
+                            </div>
+                        ))}
+                    </div>
+                        </TabsContent>
+                    </Tabs>
                     </div>
                 </div>
         </div>
